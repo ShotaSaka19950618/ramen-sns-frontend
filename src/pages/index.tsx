@@ -1,16 +1,14 @@
-import { NextPage } from "next";
+import type { NextPageWithLayout } from "pages/_app";
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { AppState } from "store";
-import { AuthState, setAuthUser } from "store/authSlice";
-import { PostsState, setTimeline } from "store/postsSlice";
-import useAuthGuard from "utils/useAuthGuard";
+import { RootState } from "store";
+import { setAuthUser } from "store/authSlice";
+import { setTimeline, setRanking } from "store/postsSlice";
+import { setMenuOpen, setMenuList } from "store/menuSlice";
 import styled from "styled-components";
-import Layout from "components/templates/Layout";
-import Loader from "components/organisms/Loader";
-import Share from "components/organisms/Share";
+import { getLayout } from "components/templates/Layout";
 import TimeLine from "components/organisms/TimeLine";
 import axios from "axios";
 import { destroyCookie } from "nookies";
@@ -48,70 +46,98 @@ const RankingContainer = styled.div`
   }
 `;
 
-const Index: NextPage = () => {
-  useAuthGuard();
+const Index: NextPageWithLayout = () => {
+  const authUser = useSelector((state: RootState) => state.auth.authUser);
+  const authToken = useSelector((state: RootState) => state.auth.token);
+  const menuList = useSelector((state: RootState) => state.menu.List);
+  const timeline = useSelector((state: RootState) => state.posts.timeline);
+  const ranking = useSelector((state: RootState) => state.posts.ranking);
   const dispatch = useDispatch();
-  const { auth, posts } = useSelector<
-    AppState,
-    { auth: AuthState; posts: PostsState }
-  >((state) => ({
-    auth: state.auth,
-    posts: state.posts,
-  }));
 
   useEffect(() => {
-    const getTimeline = async () => {
-      const timeline = await axios.post(
-        `/api/posts/timeline`,
-        {
-          userid: auth.authUser?._id,
-        },
-        {
-          headers: {
-            Authorization: auth.token,
-          },
-        }
-      ).then((response) => response.data);
-      dispatch(setTimeline(timeline.data));
-    };
-    if (auth.token && auth.authUser?.username) {
-      getTimeline();
+    const newMenuList = menuList.map((menu) => {
+      return menu.text === "ホーム"
+        ? { ...menu, active: true }
+        : { ...menu, active: false };
+    });
+    if (JSON.stringify(newMenuList) !== JSON.stringify(menuList)) {
+      dispatch(setMenuOpen("ホーム"));
+      dispatch(setMenuList(newMenuList));
     }
-  }, [dispatch, auth]);
+  }, [dispatch, menuList]);
+
+  useEffect(() => {
+    if (authUser) {
+      const getTimeline = async () => {
+        const timeline = await axios
+          .post(
+            `/api/posts/timeline`,
+            {
+              userid: authUser._id,
+            },
+            {
+              headers: {
+                Authorization: authToken,
+              },
+            }
+          )
+          .then((response) => response.data);
+        dispatch(setTimeline(timeline.data));
+      };
+      const getRanking = async () => {
+        const ranking = await axios
+          .post(
+            `/api/posts/ranking`,
+            {
+              userid: authUser._id,
+            },
+            {
+              headers: {
+                Authorization: authToken,
+              },
+            }
+          )
+          .then((response) => response.data);
+        dispatch(setRanking(ranking.data));
+      };
+      getTimeline();
+      getRanking();
+    }
+  }, [dispatch, authUser, authToken]);
 
   return (
     <>
       <Head>
         <title>ホーム / RAMEN SNS</title>
       </Head>
-      {auth.isLoading && <Loader />}
-      {!auth.isLoading && (
-        <>
-          {posts.shareOpen && <Share />}
-          <Layout>
-            <Container>
-              <TimelineContainer>
-                <TimeLine />
-              </TimelineContainer>
-              <RankingContainer>
-                <div>店舗ランキング</div>
-                <Link
-                  href="/signin"
-                  onClick={() => {
-                    dispatch(setAuthUser(null));
-                    destroyCookie(null, "accessToken");
-                  }}
-                >
-                  さいんあうと
-                </Link>
-                <span>{auth.authUser?.username}</span>
-              </RankingContainer>
-            </Container>
-          </Layout>
-        </>
-      )}
+      <Container>
+        <TimelineContainer>
+          {timeline.length !== 0 && <TimeLine />}
+        </TimelineContainer>
+        <RankingContainer>
+          <div>店舗ランキング</div>
+          {ranking.map((rank) => (
+            <div key={rank._id}>
+              <span>{rank._id}</span>
+              <span>{rank.count}</span>
+            </div>
+          ))}
+          <Link
+            href="/signin"
+            onClick={() => {
+              dispatch(setAuthUser(null));
+              destroyCookie(null, "accessToken");
+            }}
+          >
+            さいんあうと
+          </Link>
+          <span>{authUser?.username}</span>
+        </RankingContainer>
+      </Container>
     </>
   );
 };
 
 export default Index;
+
+Index.getLayout = getLayout;

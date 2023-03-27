@@ -7,7 +7,9 @@ type ButtonProps = {
   backgroundColor?: string;
   hcolor?: string;
   hbackgroundColor?: string;
-}
+  width?: string;
+  height?: string;
+};
 
 type IconButtonProps = {
   iconType: Icon;
@@ -17,19 +19,20 @@ type IconButtonProps = {
 
 const Button = styled.div<ButtonProps>`
   color: ${({ color, theme }) => color || theme.colors.black};
-  background-color: ${({ backgroundColor, theme }) => backgroundColor || theme.colors.white};
+  background-color: ${({ backgroundColor, theme }) =>
+    backgroundColor || theme.colors.white};
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80%;
-  height: 40px;
-  margin: 10px auto;
-  border-radius: 20px;
+  width: ${({ width }) => width || "80%"};
+  height: ${({ height }) => height || "40px"};
+  border-radius: 30px;
   transition: background-color 0.3s linear;
   cursor: pointer;
   &:hover {
     color: ${({ hcolor, theme }) => hcolor || theme.colors.white};
-    background-color: ${({ hbackgroundColor, theme }) => hbackgroundColor || theme.colors.black};
+    background-color: ${({ hbackgroundColor, theme }) =>
+      hbackgroundColor || theme.colors.black};
   }
 `;
 
@@ -41,7 +44,12 @@ const IconButton = (props: IconButtonProps) => {
   const { iconType, children, ...rest } = props;
   return (
     <Button {...rest}>
-      <IconComponent iconType={iconType} fontSize="24px" width="24px" height="24px" />
+      <IconComponent
+        iconType={iconType}
+        fontSize="24px"
+        width="24px"
+        height="24px"
+      />
       {children && <ButtonText>{children}</ButtonText>}
     </Button>
   );

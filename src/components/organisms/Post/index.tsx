@@ -1,10 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { AppState } from "store";
-import { AuthState } from "store/authSlice";
+import { RootState } from "store";
 import { setTimeline } from "store/postsSlice";
+import { setToast } from "store/toastSlice";
 import { Post, User } from "types";
 import { theme } from "themes";
 import styled from "styled-components";
@@ -167,19 +167,31 @@ type PostProps = {
 const Post = (props: PostProps) => {
   const { post, user } = props;
   const IMAGE_FOLDER = process.env.NEXT_PUBLIC_IMAGE_FOLDER;
-  const { auth } = useSelector<AppState, { auth: AuthState }>((state) => ({
-    auth: state.auth,
-  }));
+  const authUser = useSelector((state: RootState) => state.auth.authUser);
+  const authToken = useSelector((state: RootState) => state.auth.token);
   const dispatch = useDispatch();
-  const currentUserid = auth.authUser?._id || "";
-  const [like, setLike] = useState(post.likes.length);
-  const [isLiked, setIsLiked] = useState(post.likes.includes(currentUserid));
-  const [bookmark, setBookmark] = useState(post.bookmarks.length);
-  const [isBookmarked, setIsBookmarked] = useState(
+  const currentUserid = authUser?._id || "";
+  const [like, setLike] = useState(post.likes.includes(currentUserid));
+  const [likeCount, setLikeCount] = useState(post.likes.length);
+  const [bookmark, setBookmark] = useState(
     post.bookmarks.includes(currentUserid)
   );
+  const [bookmarkCount, setBookmarkCount] = useState(post.bookmarks.length);
+  const [follow, setFollow] = useState(user.followers.includes(currentUserid));
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setLike(post.likes.includes(currentUserid));
+    setLikeCount(post.likes.length);
+    setBookmark(post.bookmarks.includes(currentUserid));
+    setBookmarkCount(post.bookmarks.length);
+  }, [post]);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleDropdownClose);
+    return () => document.removeEventListener("mousedown", handleDropdownClose);
+  }, []);
 
   const time = (() => {
     if (typeof post.createdAt === "string") {
@@ -191,101 +203,133 @@ const Post = (props: PostProps) => {
     }
   })();
 
-  const menu = [
-    {
-      item: "フォロー",
-      onclick: async () => {
-        const result = await axios.post(
-          `/api/users/follow`,
-          {
-            userid: auth.authUser?._id,
-            targetUserid: post.userid,
+  const menu = (() => {
+    if (currentUserid === post.userid) {
+      return [
+        {
+          item: "削除",
+          onclick: async () => {
+            const result = await axios
+              .post(
+                `/api/posts/delete`,
+                {
+                  postid: post._id,
+                },
+                {
+                  headers: {
+                    Authorization: authToken,
+                  },
+                }
+              )
+              .then((response) => response.data);
+            if (result.success) {
+              const timeline = await axios
+                .post(
+                  `/api/posts/timeline`,
+                  {
+                    userid: authUser?._id,
+                  },
+                  {
+                    headers: {
+                      Authorization: authToken,
+                    },
+                  }
+                )
+                .then((response) => response.data);
+              dispatch(setTimeline(timeline.data));
+              dispatch(
+                setToast({
+                  open: true,
+                  type: "success",
+                  message: result.message,
+                })
+              );
+              setShowDropdown(false);
+            }
           },
-          {
-            headers: {
-              Authorization: auth.token,
-            },
-          }
-        );
-        console.log(result);
-      },
-    },
-    {
-      item: "削除",
-      onclick: async () => {
-        await axios.post(
-          `/api/posts/delete`,
-          {
-            postid: post._id,
+        },
+      ];
+    } else {
+      return [
+        {
+          item: follow ? "フォロー" : "フォロー解除",
+          onclick: async () => {
+            const result = await axios
+              .post(
+                `/api/users/follow`,
+                {
+                  userid: authUser?._id,
+                  targetUserid: post.userid,
+                },
+                {
+                  headers: {
+                    Authorization: authToken,
+                  },
+                }
+              )
+              .then((response) => response.data);
+            if (result.success) {
+              setFollow(!follow);
+              dispatch(
+                setToast({
+                  open: true,
+                  type: "success",
+                  message: result.message,
+                })
+              );
+            }
           },
-          {
-            headers: {
-              Authorization: auth.token,
-            },
-          }
-        );
-        setShowDropdown(false);
-        const timeline = await axios.post(
-          `/api/posts/timeline`,
-          {
-            userid: auth.authUser?._id,
-          },
-          {
-            headers: {
-              Authorization: auth.token,
-            },
-          }
-        ).then((response) => response.data);
-        dispatch(setTimeline(timeline.data));
-      },
-    },
-  ];
+        },
+      ];
+    }
+  })();
 
   const handleLike = async () => {
-    await axios.put(
-      `/api/posts/like`,
-      {
-        postid: post._id,
-        userid: auth.authUser?._id,
-      },
-      {
-        headers: {
-          Authorization: auth.token,
+    await axios
+      .put(
+        `/api/posts/like`,
+        {
+          postid: post._id,
+          userid: authUser?._id,
         },
-      }
-    );
-    setLike((like) => (isLiked ? like - 1 : like + 1));
-    setIsLiked((isLiked) => !isLiked);
+        {
+          headers: {
+            Authorization: authToken,
+          },
+        }
+      )
+      .then((response) => response.data);
+    setLike((like) => !like);
+    setLikeCount((likeCount) => (like ? likeCount - 1 : likeCount + 1));
   };
 
   const handleBookmark = async () => {
-    await axios.put(
-      `/api/posts/bookmark`,
-      {
-        postid: post._id,
-        userid: auth.authUser?._id,
-      },
-      {
-        headers: {
-          Authorization: auth.token,
+    await axios
+      .put(
+        `/api/posts/bookmark`,
+        {
+          postid: post._id,
+          userid: authUser?._id,
         },
-      }
+        {
+          headers: {
+            Authorization: authToken,
+          },
+        }
+      )
+      .then((response) => response.data);
+    setBookmark((bookmark) => !bookmark);
+    setBookmarkCount((bookmarkCount) =>
+      bookmark ? bookmarkCount - 1 : bookmarkCount + 1
     );
-    setBookmark((bookmark) => (isBookmarked ? bookmark - 1 : bookmark + 1));
-    setIsBookmarked((isBookmarked) => !isBookmarked);
   };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleDropdownClose);
-    return () => document.removeEventListener("mousedown", handleDropdownClose);
-  }, []);
 
   const handleDropdownOpen = () => {
     setShowDropdown(true);
   };
 
   const handleDropdownClose = (event: Event) => {
-    if (!(event.target instanceof HTMLDivElement)) {
+    if (!(event.target instanceof HTMLElement)) {
       return;
     }
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -297,7 +341,7 @@ const Post = (props: PostProps) => {
     <PostRoot>
       <PostWrapper>
         <PostUserAvatarContainer>
-          <Link href={`/profile/${user.username}`}>
+          <Link href={`/profile/${user._id}`}>
             <PostUserAvatar>
               <Image
                 src={IMAGE_FOLDER + user.profilePicture}
@@ -348,23 +392,23 @@ const Post = (props: PostProps) => {
             </PostStatus>
             <PostStatus
               hcolor={theme.colors.heart}
-              active={isLiked}
+              active={like}
               onClick={handleLike}
             >
               <PostStatusIcon hbackgroundColor={theme.colors.heartIcon}>
                 <Icon iconType="Favorite" fontSize="22px" />
               </PostStatusIcon>
-              <PostStatusCount>{like}</PostStatusCount>
+              <PostStatusCount>{likeCount}</PostStatusCount>
             </PostStatus>
             <PostStatus
               hcolor={theme.colors.bookmark}
-              active={isBookmarked}
+              active={bookmark}
               onClick={handleBookmark}
             >
               <PostStatusIcon hbackgroundColor={theme.colors.bookmarkIcon}>
                 <Icon iconType="Bookmark" fontSize="22px" />
               </PostStatusIcon>
-              <PostStatusCount>{bookmark}</PostStatusCount>
+              <PostStatusCount>{bookmarkCount}</PostStatusCount>
             </PostStatus>
           </PostContentBottom>
         </PostContentContainer>

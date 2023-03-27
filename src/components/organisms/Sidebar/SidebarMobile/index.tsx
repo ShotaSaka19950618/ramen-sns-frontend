@@ -1,19 +1,25 @@
-import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { AppState } from "store";
-import { MenuState } from "store/menuSlice";
-import { PostsState, setShareOpen } from "store/postsSlice";
+import { RootState } from "store";
+import { setAuthUser } from "store/authSlice";
+import { setShareOpen } from "store/postsSlice";
 import type { Menu } from "types";
+import { theme } from "themes";
 import styled from "styled-components";
 import AppLogo from "components/atoms/AppLogo";
 import Icon from "components/atoms/Icon";
 import IconButton from "components/molecules/IconButton";
+import DropdownMenu from "components/molecules/DropdownMenu";
+import { destroyCookie } from "nookies";
 
 type SidebarLinkItemProps = {
   active: boolean;
 };
 
 const SidebarRoot = styled.div`
+  position: relative;
   display: flex;
   justify-content: space-between;
   width: 100%;
@@ -28,9 +34,15 @@ const SidebarNav = styled.nav`
   width: 100%;
 `;
 
+const SidebarLogoWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+`;
+
 const SidebarLogo = styled.div`
-  position: relative;
-  margin: 20px auto;
   width: 50px;
   height: 50px;
 `;
@@ -48,48 +60,156 @@ const SidebarLinkItem = styled.li<SidebarLinkItemProps>`
   padding-bottom: 15px;
   transition: background-color 0.3s linear;
   &:hover {
-    background-color: ${({ theme }) => theme.colors.primaryActive};
+    background-color: ${({ theme }) => theme.colors.secondaryActive};
   }
 `;
 
-const SidebarPC = () => {
-  const { menu, posts } = useSelector<
-    AppState,
-    { menu: MenuState; posts: PostsState }
-  >((state) => ({
-    menu: state.menu,
-    posts: state.posts,
-  }));
-  const dispatch = useDispatch();
+const SidebarShareButton = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+`;
 
-  const handlerShareOpen = () => {
-    dispatch(setShareOpen(!posts.shareOpen));
+const SidebarUserWrapper = styled.div`
+  position: absolute;
+  bottom: 30px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const SidebarUser = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+  border-radius: 30px;
+  cursor: pointer;
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.secondaryActive};
+  }
+`;
+
+const SidebarUserAvatar = styled.div`
+  position: relative;
+  border: 2px solid ${({ theme }) => theme.colors.border};
+  border-radius: 50%;
+  overflow: hidden;
+  width: 48px;
+  height: 48px;
+`;
+
+const SideberDropDownContainer = styled.div`
+  position: absolute;
+  bottom: 60px;
+  left: 50px;
+  width: 250px;
+`;
+
+const SidebarPC = () => {
+  const IMAGE_FOLDER = process.env.NEXT_PUBLIC_IMAGE_FOLDER;
+  const authUser = useSelector((state: RootState) => state.auth.authUser);
+  const menuList = useSelector((state: RootState) => state.menu.List);
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleDropdownClose);
+    return () => document.removeEventListener("mousedown", handleDropdownClose);
+  }, []);
+
+  const handleMenuClick = (url: string) => {
+    router.push(url);
   };
+
+  const handleShareOpen = () => {
+    dispatch(setShareOpen(true));
+  };
+
+  const handleDropdownOpen = () => {
+    setShowDropdown(true);
+  };
+
+  const handleDropdownClose = (event: Event) => {
+    if (!(event.target instanceof HTMLElement)) {
+      return;
+    }
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setShowDropdown(false);
+    }
+  };
+
+  const dropdownMenu = [
+    {
+      item: "サインアウト",
+      onclick: () => {
+        dispatch(setAuthUser(null));
+        destroyCookie(null, "accessToken");
+      },
+    },
+  ];
 
   return (
     <SidebarRoot>
       <SidebarNav>
-        <SidebarLogo>
-          <AppLogo color="white" />
-        </SidebarLogo>
+        <SidebarLogoWrapper>
+          <SidebarLogo>
+            <AppLogo color="blue" />
+          </SidebarLogo>
+        </SidebarLogoWrapper>
         <SidebarLinkList>
-          {menu.List.map((menu: Menu) => {
+          {menuList.map((menu: Menu) => {
             return (
-              <Link href={menu.url} key={menu.text}>
-                <SidebarLinkItem active={menu.active}>
-                  <Icon
-                    iconType={menu.iconType}
-                    active={menu.active}
-                    fontSize="30px"
-                    width="30px"
-                    height="30px"
-                  />
-                </SidebarLinkItem>
-              </Link>
+              <SidebarLinkItem
+                active={menu.active}
+                onClick={() => handleMenuClick(menu.url)}
+                key={menu.text}
+              >
+                <Icon
+                  iconType={menu.iconType}
+                  active={menu.active}
+                  fontSize="30px"
+                  width="30px"
+                  height="30px"
+                />
+              </SidebarLinkItem>
             );
           })}
         </SidebarLinkList>
-        <IconButton iconType="RamenDining" onClick={handlerShareOpen} />
+        <SidebarShareButton>
+          <IconButton
+            iconType="RamenDining"
+            onClick={handleShareOpen}
+            color={theme.colors.white}
+            backgroundColor={theme.colors.primary}
+            hbackgroundColor={theme.colors.primaryActive}
+            width="90%"
+            height="50px"
+          />
+        </SidebarShareButton>
+        <SidebarUserWrapper>
+          {authUser && (
+            <SidebarUser onClick={handleDropdownOpen}>
+              <SidebarUserAvatar>
+                <Image
+                  src={IMAGE_FOLDER + authUser.profilePicture}
+                  alt=""
+                  fill
+                  sizes="auto"
+                />
+              </SidebarUserAvatar>
+            </SidebarUser>
+          )}
+          {showDropdown && (
+            <SideberDropDownContainer ref={dropdownRef}>
+              <DropdownMenu menu={dropdownMenu} />
+            </SideberDropDownContainer>
+          )}
+        </SidebarUserWrapper>
       </SidebarNav>
     </SidebarRoot>
   );

@@ -31,7 +31,7 @@ const StyledInput = styled.input<InputProps>`
   outline: none;
   &:focus {
     border-bottom: ${({ theme, focusUnderline }) =>
-      focusUnderline ? `1px solid ${theme.colors.primary}` : "none"}
+      focusUnderline ? `1px solid ${theme.colors.primary}` : "none"};
   }
 `;
 
@@ -43,5 +43,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     </StyledInput>
   );
 });
+
+Input.displayName = "Input";
 
 export default Input;

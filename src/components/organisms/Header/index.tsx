@@ -1,6 +1,5 @@
 import { useSelector } from "react-redux";
-import { AppState } from "store";
-import { MenuState } from "store/menuSlice";
+import { RootState } from "store";
 import styled from "styled-components";
 import Title from "components/atoms/Title";
 
@@ -15,14 +14,12 @@ const HeaderTitle = styled.div`
 `
 
 const Header = () => {
-  const { menu } = useSelector<AppState, { menu: MenuState }>((state) => ({
-    menu: state.menu,
-  }));
+  const menuOpen = useSelector((state: RootState) => state.menu.Open)
 
   return (
     <HeaderRoot>
       <HeaderTitle>
-        <Title fontSize="24px" width="100%">{menu.Open}</Title>
+        <Title fontSize="24px" width="100%">{menuOpen}</Title>
       </HeaderTitle>
     </HeaderRoot>
   );

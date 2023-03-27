@@ -1,17 +1,14 @@
 import { useSelector } from "react-redux";
-import { AppState } from "store";
-import { PostsState } from "store/postsSlice";
+import { RootState } from "store";
 import PostComponent from "components/organisms/Post";
 
 const TimeLine = () => {
-  const { posts } = useSelector<AppState, { posts: PostsState }>((state) => ({
-    posts: state.posts,
-  }));
+  const timeline = useSelector((state: RootState) => state.posts.timeline);
 
   return (
     <>
-      {posts.timeline.map((data) => (
-        <PostComponent post={data.post} user={data.user} key={data.post._id}/>
+      {timeline.map((data) => (
+        <PostComponent post={data.post} user={data.user} key={data.post._id} />
       ))}
     </>
   );

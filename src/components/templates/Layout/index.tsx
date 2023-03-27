@@ -1,10 +1,15 @@
+import { forwardRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "store";
+import { setToast } from "store/toastSlice";
+import useAuthGuard from "utils/useAuthGuard";
 import styled from "styled-components";
 import Sidebar from "components/organisms/Sidebar";
 import Header from "components/organisms/Header";
-
-type LayoutProps = {
-  children: React.ReactNode;
-};
+import Loader from "components/organisms/Loader";
+import Share from "components/organisms/Share";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
 
 const Container = styled.div`
   display: flex;
@@ -14,7 +19,7 @@ const Container = styled.div`
 `;
 
 const SidebarContainer = styled.aside`
-  background-color: ${({ theme }) => theme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.secondary};
   border-right: 1px solid ${({ theme }) => theme.colors.border};
   position: relative;
   display: flex;
@@ -29,7 +34,7 @@ const SidebarContainer = styled.aside`
 `;
 
 const MainContainer = styled.main`
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.secondary};
   position: relative;
   display: flex;
   box-sizing: border-box;
@@ -43,7 +48,7 @@ const MainContainer = styled.main`
 
 const HeaderContainer = styled.header`
   box-sizing: border-box;
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.secondary};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   width: 100%;
   height: 70px;
@@ -55,21 +60,82 @@ const ContentContainer = styled.div`
   height: calc(100% - 70px);
 `;
 
+const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref
+) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+type LayoutProps = {
+  children: React.ReactNode;
+};
+
 const Layout = (props: LayoutProps) => {
+  useAuthGuard();
+
   const { children } = props;
+  const isLoading = useSelector((state: RootState) => state.auth.isLoading);
+  const shareOpen = useSelector((state: RootState) => state.posts.shareOpen);
+  const toastState = useSelector((state: RootState) => state.toast.state);
+  const dispatch = useDispatch();
+
+  // トーストを閉じる
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    dispatch(
+      setToast({
+        open: false,
+        type: "",
+        message: "",
+      })
+    );
+  };
+
   return (
-    <Container>
-      <SidebarContainer>
-        <Sidebar />
-      </SidebarContainer>
-      <MainContainer>
-        <HeaderContainer>
-          <Header />
-        </HeaderContainer>
-        <ContentContainer>{children}</ContentContainer>
-      </MainContainer>
-    </Container>
+    <>
+      {isLoading && <Loader />}
+      {!isLoading && (
+        <Container>
+          <SidebarContainer>
+            <Sidebar />
+          </SidebarContainer>
+          <MainContainer>
+            <HeaderContainer>
+              <Header />
+            </HeaderContainer>
+            <ContentContainer>{children}</ContentContainer>
+          </MainContainer>
+        </Container>
+      )}
+      {shareOpen && <Share />}
+      {(toastState.type === "success" || toastState.type === "error") && (
+        <Snackbar
+          open={toastState.open}
+          autoHideDuration={6000}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert
+            onClose={handleClose}
+            severity={toastState.type}
+            sx={{ width: "100%" }}
+          >
+            {toastState.message}
+          </Alert>
+        </Snackbar>
+      )}
+    </>
   );
 };
 
 export default Layout;
+
+export const getLayout = (page: React.ReactElement) => {
+  return <Layout>{page}</Layout>;
+};

@@ -46,7 +46,7 @@ export type Icon =
   | "ArrowDownward"
   | "ArrowForward"
   | "ArrowBack"
-  | "Image";
+  | "Photo";
 
 // メニュー
 export type Menu = {

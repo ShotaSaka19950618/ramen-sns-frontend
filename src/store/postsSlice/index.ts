@@ -1,20 +1,25 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { Post, User } from "types";
 
-export type PostsState = {
+export interface PostsState {
   shareOpen: boolean;
   timeline: {
     post: Post;
     user: User;
   }[];
-};
+  ranking: {
+    _id: string;
+    count: number;
+  }[];
+}
 
 const initialState: PostsState = {
   shareOpen: false,
   timeline: [],
+  ranking: [],
 };
 
-export const postsSlice = createSlice({
+const postsSlice = createSlice({
   name: "posts",
   initialState,
   reducers: {
@@ -24,7 +29,12 @@ export const postsSlice = createSlice({
     setTimeline: (state, action) => {
       state.timeline = action.payload;
     },
+    setRanking: (state, action) => {
+      state.ranking = action.payload;
+    },
   },
 });
 
-export const { setShareOpen, setTimeline } = postsSlice.actions;
+export const { setShareOpen, setTimeline, setRanking } = postsSlice.actions;
+
+export default postsSlice.reducer;

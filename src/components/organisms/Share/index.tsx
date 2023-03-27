@@ -2,9 +2,9 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
-import { AppState } from "store";
-import { AuthState } from "store/authSlice";
-import { PostsState, setTimeline, setShareOpen } from "store/postsSlice";
+import { RootState } from "store";
+import { setTimeline, setShareOpen } from "store/postsSlice";
+import { setToast } from "store/toastSlice";
 import { theme } from "themes";
 import styled from "styled-components";
 import Icon from "components/atoms/Icon";
@@ -123,13 +123,8 @@ type ShareFormData = {
 
 const Share = () => {
   const IMAGE_FOLDER = process.env.NEXT_PUBLIC_IMAGE_FOLDER;
-  const { auth, posts } = useSelector<
-  AppState,
-  { auth: AuthState; posts: PostsState }
-  >((state) => ({
-    auth: state.auth,
-    posts: state.posts,
-  }));
+  const authUser = useSelector((state: RootState) => state.auth.authUser);
+  const authToken = useSelector((state: RootState) => state.auth.token);
   const dispatch = useDispatch();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
@@ -143,13 +138,13 @@ const Share = () => {
   const onSubmit = async (data: ShareFormData) => {
     const { shopname, desc } = data;
     const newPost = {
-      userid: auth.authUser?._id,
+      userid: authUser?._id,
       shopname: shopname,
       desc: desc,
       img: "",
     };
     if (file) {
-      const fileName = `posts/${Date.now()}-${auth.authUser?._id}`;
+      const fileName = `posts/${Date.now()}-${authUser?._id}`;
       newPost.img = fileName;
       const fileData = new FormData();
       fileData.append("name", fileName);
@@ -158,32 +153,51 @@ const Share = () => {
       await axios.post("/api/fileUpload", fileData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: auth.token,
+          Authorization: authToken,
         },
       });
     }
-    await axios.post("/api/posts/post", newPost, {
-      headers: {
-        Authorization: auth.token,
-      },
-    });
-    dispatch(setShareOpen(!posts.shareOpen));
-    const timeline = await axios.post(
-      `/api/posts/timeline`,
-      {
-        userid: auth.authUser?._id,
-      },
-      {
+    const result = await axios
+      .post("/api/posts/post", newPost, {
         headers: {
-          Authorization: auth.token,
+          Authorization: authToken,
         },
-      }
-    ).then((response) => response.data);
-    dispatch(setTimeline(timeline.data));
+      })
+      .then((response) => response.data);
+    if (result.success) {
+      dispatch(
+        setToast({
+          open: true,
+          type: "success",
+          message: result.message,
+        })
+      );
+      dispatch(setShareOpen(false));
+      const timeline = await axios
+        .post(
+          `/api/posts/timeline`,
+          {
+            userid: authUser?._id,
+          },
+          {
+            headers: {
+              Authorization: authToken,
+            },
+          }
+        )
+        .then((response) => response.data);
+      dispatch(setTimeline(timeline.data));
+    } else {
+      setToast({
+        open: true,
+        type: "error",
+        message: result.message,
+      });
+    }
   };
 
   const handlerShareClose = () => {
-    dispatch(setShareOpen(!posts.shareOpen));
+    dispatch(setShareOpen(false));
   };
 
   const handleFileSet = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -220,9 +234,9 @@ const Share = () => {
         <ShareWrapper>
           <ShareUserAvatarWrapper>
             <ShareUserAvatar>
-              {auth.authUser?.profilePicture && (
+              {authUser?.profilePicture && (
                 <Image
-                  src={IMAGE_FOLDER + auth.authUser?.profilePicture}
+                  src={IMAGE_FOLDER + authUser?.profilePicture}
                   alt=""
                   fill
                   sizes="auto"
@@ -291,7 +305,7 @@ const Share = () => {
                 <ImageButtonWrapper>
                   <ImageButtomIcon>
                     <label htmlFor="file">
-                      <Icon iconType="Image" fontSize="26px" />
+                      <Icon iconType="Photo" fontSize="26px" />
                       <input
                         type="file"
                         id="file"

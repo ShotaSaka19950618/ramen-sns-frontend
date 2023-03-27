@@ -1,23 +1,16 @@
-import { combineReducers } from "@reduxjs/toolkit";
 import { configureStore } from "@reduxjs/toolkit";
-import { menuSlice, MenuState } from "store/menuSlice";
-import { postsSlice, PostsState } from "store/postsSlice";
-import { authSlice, AuthState } from "store/authSlice";
+import authSlice from "store/authSlice";
+import menuSlice from "store/menuSlice";
+import postsSlice from "store/postsSlice";
+import toastSlice from "store/toastSlice";
 
-export type AppState = {
-  menu: MenuState;
-  posts: PostsState;
-  auth: AuthState;
-};
-
-const rootReducer = combineReducers<AppState>({
-  menu: menuSlice.reducer,
-  posts: postsSlice.reducer,
-  auth: authSlice.reducer,
+export const store = configureStore({
+  reducer: {
+    auth: authSlice,
+    menu: menuSlice,
+    posts: postsSlice,
+    toast: toastSlice,
+  },
 });
 
-const store = configureStore({
-  reducer: rootReducer,
-});
-
-export default store;
+export type RootState = ReturnType<typeof store.getState>;

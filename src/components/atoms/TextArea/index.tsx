@@ -32,7 +32,7 @@ const StyledTextArea = styled.textarea<TextAreaProps>`
   resize: none;
   &:focus {
     border-bottom: ${({ theme, focusUnderline }) =>
-      focusUnderline ? `1px solid ${theme.colors.primary}` : "none"}
+      focusUnderline ? `1px solid ${theme.colors.primary}` : "none"};
   }
 `;
 
@@ -46,5 +46,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     );
   }
 );
+
+TextArea.displayName = "TextArea";
 
 export default TextArea;

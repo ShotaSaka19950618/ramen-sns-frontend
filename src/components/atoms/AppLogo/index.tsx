@@ -1,4 +1,11 @@
 import Image from "next/image";
+import styled from "styled-components";
+
+const AppLogoWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+`
 
 type AppLogoProps = {
   color: "white" | "blue";
@@ -7,14 +14,14 @@ type AppLogoProps = {
 const AppLogo = (props: AppLogoProps) => {
   const { color } = props;
   return (
-    <>
+    <AppLogoWrapper>
       {color === "white" && (
-        <Image src="images/AppLogoWhite.svg" alt="logo" fill priority />
+        <Image src="/AppLogoWhite.svg" alt="logo" fill priority sizes="auto" />
       )}
       {color === "blue" && (
-        <Image src="images/AppLogoBlue.svg" alt="logo" fill priority />
+        <Image src="/AppLogoBlue.svg" alt="logo" fill priority sizes="auto" />
       )}
-    </>
+    </AppLogoWrapper>
   );
 };
 

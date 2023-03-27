@@ -25,7 +25,7 @@ import {
   ArrowDownward,
   ArrowForward,
   ArrowBack,
-  Image,
+  Photo
 } from "@mui/icons-material";
 import type { Icon } from "types";
 
@@ -141,8 +141,8 @@ const Icon = (props: IconProps) => {
       {iconType === "ArrowBack" && (
         <ArrowBack fontSize="inherit" color="inherit" />
       )}
-      {iconType === "Image" && (
-        <Image fontSize="inherit" color="inherit" />
+      {iconType === "Photo" && (
+        <Photo fontSize="inherit" color="inherit" />
       )}
     </IconWrapper>
   );

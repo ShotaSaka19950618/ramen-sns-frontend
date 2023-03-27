@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { Menu } from "types";
 
-export type MenuState = {
+export interface MenuState {
   Open: string;
   List: Menu[];
-};
+}
 
 const initialState: MenuState = {
   Open: "ホーム",
@@ -17,7 +17,7 @@ const initialState: MenuState = {
     },
     {
       iconType: "Notifications",
-      url: "/Notifications",
+      url: "/notifications",
       text: "通知",
       active: false,
     },
@@ -42,7 +42,7 @@ const initialState: MenuState = {
   ],
 };
 
-export const menuSlice = createSlice({
+const menuSlice = createSlice({
   name: "menu",
   initialState,
   reducers: {
@@ -56,3 +56,5 @@ export const menuSlice = createSlice({
 });
 
 export const { setMenuOpen, setMenuList } = menuSlice.actions;
+
+export default menuSlice.reducer;

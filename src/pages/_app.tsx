@@ -1,7 +1,8 @@
+import type { NextPage } from "next";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { Provider } from "react-redux";
-import store from "store";
+import { store } from "store";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { reset } from "styled-reset";
 import { theme } from "themes";
@@ -38,7 +39,16 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const MyApp = ({ Component, pageProps }: AppProps) => {
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: React.ReactElement) => React.ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
+  const getLayout = Component.getLayout ?? ((page) => page);
   return (
     <>
       <Head>
@@ -50,12 +60,12 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         />
         <meta property="og:locale" content="ja_JP" />
         <meta property="og:type" content="website" />
-        <link rel="icon" href="images/favicon.svg" />
+        <link rel="icon" href="/favicon.svg" />
       </Head>
       <GlobalStyle />
       <ThemeProvider theme={theme}>
         <Provider store={store}>
-          <Component {...pageProps} />
+          {getLayout(<Component {...pageProps} />)}
         </Provider>
       </ThemeProvider>
     </>

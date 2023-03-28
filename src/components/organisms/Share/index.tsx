@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
-import { setTimeline, setShareOpen } from "store/postsSlice";
+import { setTimeline, setTimelineAll, setShareOpen } from "store/postsSlice";
 import { setToast } from "store/toastSlice";
 import { theme } from "themes";
 import styled from "styled-components";
@@ -186,7 +186,21 @@ const Share = () => {
           }
         )
         .then((response) => response.data);
+        const timelineAll = await axios
+        .post(
+          `/api/posts/all`,
+          {
+            userid: authUser?._id,
+          },
+          {
+            headers: {
+              Authorization: authToken,
+            },
+          }
+        )
+        .then((response) => response.data);
       dispatch(setTimeline(timeline.data));
+      dispatch(setTimelineAll(timelineAll.data));
     } else {
       setToast({
         open: true,

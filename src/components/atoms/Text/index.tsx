@@ -1,8 +1,13 @@
 import styled from "styled-components";
 
 type TextProps = React.ComponentPropsWithoutRef<"span"> & {
+  display?: string;
+  alignItems?: string;
+  justifyContent?: string;
   fontSize?: string;
+  fontWeight?: string;
   color?: string;
+  background?: string;
   backgroundColor?: string;
   width?: string;
   height?: string;
@@ -14,11 +19,16 @@ type TextProps = React.ComponentPropsWithoutRef<"span"> & {
 };
 
 const StyledText = styled.span<TextProps>`
+  display: ${({ display }) => display};
+  align-items: ${({ alignItems }) => alignItems};
+  justify-content: ${({ justifyContent }) => justifyContent};
   font-size: ${({ fontSize }) => fontSize || "16px"};
+  font-weight: ${({ fontWeight }) => fontWeight || "500"};
   color: ${({ color, theme }) => color || theme.colors.text};
+  background: ${({ background }) => background};
   background-color: ${({ backgroundColor }) => backgroundColor};
-  width: ${({ width }) => width || "100%"};
-  height: ${({ height }) => height || "100%"};
+  width: ${({ width }) => width};
+  height: ${({ height }) => height};
   border: ${({ border }) => border || "none"};
   border-top: ${({ borderTop }) => borderTop || "none"};
   border-bottom: ${({ borderBottom }) => borderBottom || "none"};

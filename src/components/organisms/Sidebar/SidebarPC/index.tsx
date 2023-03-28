@@ -104,7 +104,6 @@ const SidebarUser = styled.div`
 
 const SidebarUserAvatar = styled.div`
   position: relative;
-  border: 2px solid ${({ theme }) => theme.colors.border};
   border-radius: 50%;
   overflow: hidden;
   width: 48px;

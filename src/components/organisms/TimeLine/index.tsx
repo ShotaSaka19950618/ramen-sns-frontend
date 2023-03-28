@@ -1,13 +1,17 @@
-import { useSelector } from "react-redux";
-import { RootState } from "store";
 import PostComponent from "components/organisms/Post";
+import type { Timeline } from "types";
 
-const TimeLine = () => {
-  const timeline = useSelector((state: RootState) => state.posts.timeline);
+
+type TimeLineProps = {
+  data: Timeline
+}
+
+const TimeLine = (props: TimeLineProps) => {
+  const { data } = props;
 
   return (
     <>
-      {timeline.map((data) => (
+      {data.map((data) => (
         <PostComponent post={data.post} user={data.user} key={data.post._id} />
       ))}
     </>

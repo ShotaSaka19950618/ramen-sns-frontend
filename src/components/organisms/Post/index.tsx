@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
-import { setTimeline } from "store/postsSlice";
+import { setTimeline, setTimelineAll } from "store/postsSlice";
 import { setToast } from "store/toastSlice";
 import { Post, User } from "types";
 import { theme } from "themes";
@@ -50,7 +50,6 @@ const PostContentContainer = styled.div`
 
 const PostUserAvatar = styled.div`
   position: relative;
-  border: 2px solid ${({ theme }) => theme.colors.border};
   border-radius: 50%;
   overflow: hidden;
   width: 40px;
@@ -186,7 +185,7 @@ const Post = (props: PostProps) => {
     setLikeCount(post.likes.length);
     setBookmark(post.bookmarks.includes(currentUserid));
     setBookmarkCount(post.bookmarks.length);
-  }, [post]);
+  }, [post, currentUserid]);
 
   useEffect(() => {
     document.addEventListener("mousedown", handleDropdownClose);
@@ -236,7 +235,21 @@ const Post = (props: PostProps) => {
                   }
                 )
                 .then((response) => response.data);
+              const timelineAll = await axios
+                .post(
+                  `/api/posts/all`,
+                  {
+                    userid: authUser?._id,
+                  },
+                  {
+                    headers: {
+                      Authorization: authToken,
+                    },
+                  }
+                )
+                .then((response) => response.data);
               dispatch(setTimeline(timeline.data));
+              dispatch(setTimelineAll(timelineAll.data));
               dispatch(
                 setToast({
                   open: true,
@@ -252,7 +265,7 @@ const Post = (props: PostProps) => {
     } else {
       return [
         {
-          item: follow ? "フォロー" : "フォロー解除",
+          item: follow ? "フォロー解除" : "フォロー",
           onclick: async () => {
             const result = await axios
               .post(
@@ -287,7 +300,7 @@ const Post = (props: PostProps) => {
   const handleLike = async () => {
     await axios
       .put(
-        `/api/posts/like`,
+        `/api/posts/putLike`,
         {
           postid: post._id,
           userid: authUser?._id,
@@ -306,7 +319,7 @@ const Post = (props: PostProps) => {
   const handleBookmark = async () => {
     await axios
       .put(
-        `/api/posts/bookmark`,
+        `/api/posts/putBookmark`,
         {
           postid: post._id,
           userid: authUser?._id,

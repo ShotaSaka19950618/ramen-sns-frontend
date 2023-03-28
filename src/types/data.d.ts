@@ -28,6 +28,12 @@ export type Post = {
   updatedAt?: string;
 };
 
+// タイムライン
+export type Timeline = {
+  post: Post;
+  user: User;
+}[];
+
 // アイコン
 export type Icon =
   | "Home"

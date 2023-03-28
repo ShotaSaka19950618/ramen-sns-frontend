@@ -7,6 +7,10 @@ export interface PostsState {
     post: Post;
     user: User;
   }[];
+  timelineAll: {
+    post: Post;
+    user: User;
+  }[];
   ranking: {
     _id: string;
     count: number;
@@ -16,6 +20,7 @@ export interface PostsState {
 const initialState: PostsState = {
   shareOpen: false,
   timeline: [],
+  timelineAll: [],
   ranking: [],
 };
 
@@ -29,12 +34,15 @@ const postsSlice = createSlice({
     setTimeline: (state, action) => {
       state.timeline = action.payload;
     },
+    setTimelineAll: (state, action) => {
+      state.timelineAll = action.payload;
+    },
     setRanking: (state, action) => {
       state.ranking = action.payload;
     },
   },
 });
 
-export const { setShareOpen, setTimeline, setRanking } = postsSlice.actions;
+export const { setShareOpen, setTimeline, setTimelineAll, setRanking } = postsSlice.actions;
 
 export default postsSlice.reducer;

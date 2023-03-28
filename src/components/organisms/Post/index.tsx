@@ -9,6 +9,7 @@ import { Post, User } from "types";
 import { theme } from "themes";
 import styled from "styled-components";
 import Icon from "components/atoms/Icon";
+import Text from "components/atoms/Text";
 import DropdownMenu from "components/molecules/DropdownMenu";
 import { formatDistance } from "date-fns";
 import { ja } from "date-fns/locale";
@@ -68,20 +69,7 @@ const PostContentTop = styled.div`
   margin-bottom: 5px;
 `;
 
-const PostUser = styled.span`
-  color: ${({ theme }) => theme.colors.text};
-  font-weight: 550;
-  margin-right: 10px;
-`;
-
-const PostUsername = styled.span`
-  color: ${({ theme }) => theme.colors.subtext};
-  margin-right: 10px;
-`;
-
-const PostDate = styled.span`
-  color: ${({ theme }) => theme.colors.subtext};
-`;
+const PostUser = styled.div``;
 
 const PostMore = styled.div`
   color: ${({ theme }) => theme.colors.subtext};
@@ -97,8 +85,11 @@ const PostContentCenter = styled.div`
   margin-bottom: 10px;
 `;
 
-const PostText = styled.span`
-  display: block;
+const PostShopname = styled.div`
+  margin-bottom: 10px;
+`;
+
+const PostDesc = styled.div`
   white-space: pre-wrap;
   margin-bottom: 10px;
 `;
@@ -145,10 +136,6 @@ const PostStatusIcon = styled.div<PostStatusIConProps>`
   &:hover {
     background-color: ${({ hbackgroundColor }) => hbackgroundColor};
   }
-`;
-
-const PostStatusCount = styled.span`
-  padding-left: 5px;
 `;
 
 const PostDropDownContainer = styled.div`
@@ -367,17 +354,30 @@ const Post = (props: PostProps) => {
         </PostUserAvatarContainer>
         <PostContentContainer>
           <PostContentTop>
-            <div>
-              <PostUser>{user.name}</PostUser>
-              <PostUsername>@{user.username}</PostUsername>
-              <PostDate>・{time}</PostDate>
-            </div>
+            <PostUser>
+              <Text
+                color={theme.colors.text}
+                fontWeight="550"
+                marginRight="10px"
+              >
+                {user.name}
+              </Text>
+              <Text color={theme.colors.subtext} marginRight="10px">
+                @{user.username}
+              </Text>
+              <Text color={theme.colors.subtext}>・{time}</Text>
+            </PostUser>
             <PostMore onClick={handleDropdownOpen}>
               <Icon iconType="MoreHoriz" fontSize="18px" />
             </PostMore>
           </PostContentTop>
           <PostContentCenter>
-            <PostText>{post.desc}</PostText>
+            <PostShopname>
+              <Text>{post.shopname}</Text>
+            </PostShopname>
+            <PostDesc>
+              <Text>{post.desc}</Text>
+            </PostDesc>
             {post.img && (
               <PostImage>
                 <Image
@@ -401,7 +401,7 @@ const Post = (props: PostProps) => {
               <PostStatusIcon hbackgroundColor={theme.colors.chatIcon}>
                 <Icon iconType="ChatBubble" fontSize="20px" />
               </PostStatusIcon>
-              <PostStatusCount>{post.comments.length}</PostStatusCount>
+              <Text>{post.comments.length}</Text>
             </PostStatus>
             <PostStatus
               hcolor={theme.colors.heart}
@@ -411,7 +411,7 @@ const Post = (props: PostProps) => {
               <PostStatusIcon hbackgroundColor={theme.colors.heartIcon}>
                 <Icon iconType="Favorite" fontSize="22px" />
               </PostStatusIcon>
-              <PostStatusCount>{likeCount}</PostStatusCount>
+              <Text>{likeCount}</Text>
             </PostStatus>
             <PostStatus
               hcolor={theme.colors.bookmark}
@@ -421,7 +421,7 @@ const Post = (props: PostProps) => {
               <PostStatusIcon hbackgroundColor={theme.colors.bookmarkIcon}>
                 <Icon iconType="Bookmark" fontSize="22px" />
               </PostStatusIcon>
-              <PostStatusCount>{bookmarkCount}</PostStatusCount>
+              <Text>{bookmarkCount}</Text>
             </PostStatus>
           </PostContentBottom>
         </PostContentContainer>

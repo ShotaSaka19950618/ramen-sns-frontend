@@ -25,7 +25,6 @@ const BookmarksContainer = styled.div`
   flex-direction: column;
   word-wrap: break-word;
   overflow: scroll;
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const RankingContainer = styled.div`

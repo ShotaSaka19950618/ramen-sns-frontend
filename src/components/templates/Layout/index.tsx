@@ -49,6 +49,7 @@ const MainContainer = styled.main`
 const HeaderContainer = styled.header`
   box-sizing: border-box;
   background-color: ${({ theme }) => theme.colors.secondary};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   width: 100%;
   height: 70px;
 `;

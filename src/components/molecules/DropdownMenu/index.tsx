@@ -30,7 +30,7 @@ const DropdownMenu = (props: DropdownMenuProps) => {
     <DropdownMenuRoot>
       {menu.map((menu) => (
         <DropdownMenuItem key={menu.item} onClick={menu.onclick}>
-          <Text>{menu.item}</Text>
+          <Text padding="11px 12px 12px 9px">{menu.item}</Text>
         </DropdownMenuItem>
       ))}
     </DropdownMenuRoot>

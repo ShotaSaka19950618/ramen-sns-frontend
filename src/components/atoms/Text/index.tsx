@@ -16,15 +16,26 @@ type TextProps = React.ComponentPropsWithoutRef<"span"> & {
   borderBottom?: string;
   borderLeft?: string;
   borderRight?: string;
+  margin?: string;
+  marginTop?: string;
+  marginBottom?: string;
+  marginLeft?: string;
+  marginRight?: string;
+  padding?: string;
+  paddingTop?: string;
+  paddingBottom?: string;
+  paddingLeft?: string;
+  paddingRight?: string;
+  whiteSpace?: "pre-wrap" | "pre-line";
 };
 
 const StyledText = styled.span<TextProps>`
   display: ${({ display }) => display};
   align-items: ${({ alignItems }) => alignItems};
   justify-content: ${({ justifyContent }) => justifyContent};
-  font-size: ${({ fontSize }) => fontSize || "16px"};
-  font-weight: ${({ fontWeight }) => fontWeight || "500"};
-  color: ${({ color, theme }) => color || theme.colors.text};
+  font-size: ${({ fontSize }) => fontSize};
+  font-weight: ${({ fontWeight }) => fontWeight};
+  color: ${({ color }) => color};
   background: ${({ background }) => background};
   background-color: ${({ backgroundColor }) => backgroundColor};
   width: ${({ width }) => width};
@@ -34,7 +45,17 @@ const StyledText = styled.span<TextProps>`
   border-bottom: ${({ borderBottom }) => borderBottom || "none"};
   border-left: ${({ borderLeft }) => borderLeft || "none"};
   border-right: ${({ borderRight }) => borderRight || "none"};
-  padding: 11px 12px 12px 9px;
+  margin: ${({ margin }) => margin};
+  margin-top: ${({ marginTop }) => marginTop};
+  margin-bottom: ${({ marginBottom }) => marginBottom};
+  margin-left: ${({ marginLeft }) => marginLeft};
+  margin-right: ${({ marginRight }) => marginRight};
+  padding: ${({ padding }) => padding};
+  padding-top: ${({ paddingTop }) => paddingTop};
+  padding-bottom: ${({ paddingBottom }) => paddingBottom};
+  padding-left: ${({ paddingLeft }) => paddingLeft};
+  padding-right: ${({ paddingRight }) => paddingRight};
+  white-space: ${({ whiteSpace }) => whiteSpace};
 `;
 
 const Text = (props: TextProps) => {

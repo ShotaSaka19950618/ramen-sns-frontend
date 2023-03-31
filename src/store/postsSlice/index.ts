@@ -1,16 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { Post, User } from "types";
+import type { Timeline, Notifications } from "types";
 
 export interface PostsState {
-  shareOpen: boolean;
-  timeline: {
-    post: Post;
-    user: User;
-  }[];
-  timelineAll: {
-    post: Post;
-    user: User;
-  }[];
+  share: {
+    open: boolean;
+    comment: {
+      id: string;
+      shopname: string;
+      desc: string;
+      name: string;
+      username: string;
+      profilePicture: string;
+      createdAt: string;
+    };
+  };
+  timeline: Timeline[];
+  timelineAll: Timeline[];
+  bookmarks: Timeline[];
+  notifications: Notifications[];
   ranking: {
     _id: string;
     count: number;
@@ -18,9 +25,22 @@ export interface PostsState {
 }
 
 const initialState: PostsState = {
-  shareOpen: false,
+  share: {
+    open: false,
+    comment: {
+      id: "",
+      shopname: "",
+      desc: "",
+      createdAt: "",
+      name: "",
+      username: "",
+      profilePicture: "",
+    },
+  },
   timeline: [],
   timelineAll: [],
+  bookmarks: [],
+  notifications: [],
   ranking: [],
 };
 
@@ -28,8 +48,8 @@ const postsSlice = createSlice({
   name: "posts",
   initialState,
   reducers: {
-    setShareOpen: (state, action) => {
-      state.shareOpen = action.payload;
+    setShare: (state, action) => {
+      state.share = action.payload;
     },
     setTimeline: (state, action) => {
       state.timeline = action.payload;
@@ -37,12 +57,25 @@ const postsSlice = createSlice({
     setTimelineAll: (state, action) => {
       state.timelineAll = action.payload;
     },
+    setBookmarks: (state, action) => {
+      state.bookmarks = action.payload;
+    },
+    setNotifications: (state, action) => {
+      state.notifications = action.payload;
+    },
     setRanking: (state, action) => {
       state.ranking = action.payload;
     },
   },
 });
 
-export const { setShareOpen, setTimeline, setTimelineAll, setRanking } = postsSlice.actions;
+export const {
+  setShare,
+  setTimeline,
+  setTimelineAll,
+  setBookmarks,
+  setNotifications,
+  setRanking,
+} = postsSlice.actions;
 
 export default postsSlice.reducer;

@@ -9,40 +9,11 @@ import { setMenuOpen, setMenuList } from "store/menuSlice";
 import { User, Timeline } from "types";
 import styled from "styled-components";
 import { getLayout } from "components/templates/Layout";
-import TimeLine from "components/organisms/TimeLine";
+import Post from "components/organisms/Post";
 import Text from "components/atoms/Text";
 import axios from "axios";
 
-const Container = styled.div`
-  display: flex;
-  width: 100%;
-  height: 100%;
-`;
-
-const ProfileContainer = styled.div`
-  position: relative;
-  box-sizing: border-box;
-  flex-grow: 1.75;
-  flex-shrink: 0;
-  flex-basis: 0;
-  flex-direction: column;
-  word-wrap: break-word;
-  overflow: scroll;
-`;
-
-const RankingContainer = styled.div`
-  border-left: 1px solid ${({ theme }) => theme.colors.border};
-  position: relative;
-  box-sizing: border-box;
-  flex-grow: 1;
-  flex-shrink: 0;
-  flex-basis: 0;
-  flex-direction: column;
-  word-wrap: break-word;
-  @media screen and (max-width: 1024px) {
-    display: none;
-  }
-`;
+const ProfileContainer = styled.div``;
 
 const ProfileInfo = styled.div`
   width: 100%;
@@ -118,6 +89,8 @@ const ProfileFollowerCount = styled.span`
   margin-right: 5px;
 `;
 
+const TimelineContainer = styled.div``;
+
 const TimelineDispSelect = styled.div`
   display: flex;
   width: 100%;
@@ -144,8 +117,8 @@ const Profile: NextPageWithLayout = () => {
   const menuList = useSelector((state: RootState) => state.menu.List);
   const dispatch = useDispatch();
   const [user, SetUser] = useState<User>();
-  const [timeline, setTimeline] = useState<Timeline>();
-  const [likes, setLikes] = useState<Timeline>();
+  const [timeline, setTimeline] = useState<Timeline[]>();
+  const [likes, setLikes] = useState<Timeline[]>();
   const [disp, setDisp] = useState(1);
   const router = useRouter();
   const { id } = router.query;
@@ -189,137 +162,149 @@ const Profile: NextPageWithLayout = () => {
   }, [dispatch, id, authUser, authToken, menuList]);
 
   useEffect(() => {
-    const getTimeline = async () => {
-      const timeline = await axios
-        .post(
-          `/api/posts/profile`,
-          {
-            userid: id,
-          },
-          {
-            headers: {
-              Authorization: authToken,
+    if (id) {
+      const getTimeline = async () => {
+        const timeline = await axios
+          .post(
+            `/api/posts/profile`,
+            {
+              userid: id,
             },
-          }
-        )
-        .then((response) => response.data);
-      setTimeline(timeline.data);
-    };
-    const getLikes = async () => {
-      const likes = await axios
-        .post(
-          `/api/posts/getLike`,
-          {
-            userid: id,
-          },
-          {
-            headers: {
-              Authorization: authToken,
+            {
+              headers: {
+                Authorization: authToken,
+              },
+            }
+          )
+          .then((response) => response.data);
+        setTimeline(timeline.data);
+      };
+      getTimeline();
+    }
+  }, [id, authToken, disp]);
+
+  useEffect(() => {
+    if (id) {
+      const getLikes = async () => {
+        const likes = await axios
+          .post(
+            `/api/posts/getLike`,
+            {
+              userid: id,
             },
-          }
-        )
-        .then((response) => response.data);
-      setLikes(likes.data);
-    };
-    getTimeline();
-    getLikes();
-  }, [authToken, id]);
+            {
+              headers: {
+                Authorization: authToken,
+              },
+            }
+          )
+          .then((response) => response.data);
+        setLikes(likes.data);
+      };
+      getLikes();
+    }
+  }, [id, authToken, disp]);
 
   return (
     <>
-      <Head>
-        <title>ホーム / RAMEN SNS</title>
-      </Head>
-      <Container>
-        {user && (
-          <>
-            <ProfileContainer>
-              <ProfileInfo>
-                <ProfileCover>
+      <Head>{user && <title>{user.name} / RAMEN SNS</title>}</Head>
+      <ProfileContainer>
+        <ProfileInfo>
+          {user && (
+            <>
+              <ProfileCover>
+                <Image
+                  src={IMAGE_FOLDER + user.coverPicture}
+                  alt=""
+                  fill
+                  sizes="auto"
+                  priority
+                  style={{ objectFit: "cover" }}
+                />
+                <ProfileAvatar>
                   <Image
-                    src={IMAGE_FOLDER + user.coverPicture}
+                    src={IMAGE_FOLDER + user.profilePicture}
                     alt=""
                     fill
                     sizes="auto"
                     priority
                     style={{ objectFit: "cover" }}
                   />
-                  <ProfileAvatar>
-                    <Image
-                      src={IMAGE_FOLDER + user.profilePicture}
-                      alt=""
-                      fill
-                      sizes="auto"
-                      priority
-                      style={{ objectFit: "cover" }}
-                    />
-                  </ProfileAvatar>
-                </ProfileCover>
-                <ProfileNameContainer>
-                  <ProfileName>{user.name}</ProfileName>
-                </ProfileNameContainer>
-                <ProfileUsernameContainer>
-                  <ProfileUsername>@{user.username}</ProfileUsername>
-                </ProfileUsernameContainer>
-                <ProfileDescContainer>
-                  <ProfileDesc>{user.desc}</ProfileDesc>
-                </ProfileDescContainer>
-                <ProfileStatus>
-                  <ProfileFollowing>
-                    <ProfileFollowingCount>
-                      {user.followings.length}
-                    </ProfileFollowingCount>
-                    フォロー中
-                  </ProfileFollowing>
-                  <ProfileFollower>
-                    <ProfileFollowerCount>
-                      {user.followers.length}
-                    </ProfileFollowerCount>
-                    フォロワー
-                  </ProfileFollower>
-                </ProfileStatus>
-              </ProfileInfo>
-              <TimelineDispSelect>
-                <TimelineDisp onClick={() => setDisp(1)}>
-                  <Text
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    height="100%"
-                    fontWeight={disp === 1 ? "550" : "500"}
-                    background={
-                      disp === 1
-                        ? "linear-gradient(transparent 90%, #99ccff 0%)"
-                        : ""
-                    }
-                  >
-                    投稿
-                  </Text>
-                </TimelineDisp>
-                <TimelineDisp onClick={() => setDisp(2)}>
-                  <Text
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    height="100%"
-                    fontWeight={disp === 2 ? "550" : "500"}
-                    background={
-                      disp === 2
-                        ? "linear-gradient(transparent 90%, #99ccff 0%)"
-                        : ""
-                    }
-                  >
-                    いいね
-                  </Text>
-                </TimelineDisp>
-              </TimelineDispSelect>
-              {disp === 1 && timeline && <TimeLine data={timeline} />}
-              {disp === 2 && likes && <TimeLine data={likes} />}
-            </ProfileContainer>
-            <RankingContainer></RankingContainer>
-          </>
-        )}
-      </Container>
+                </ProfileAvatar>
+              </ProfileCover>
+              <ProfileNameContainer>
+                <ProfileName>{user.name}</ProfileName>
+              </ProfileNameContainer>
+              <ProfileUsernameContainer>
+                <ProfileUsername>@{user.username}</ProfileUsername>
+              </ProfileUsernameContainer>
+              <ProfileDescContainer>
+                <ProfileDesc>{user.desc}</ProfileDesc>
+              </ProfileDescContainer>
+              <ProfileStatus>
+                <ProfileFollowing>
+                  <ProfileFollowingCount>
+                    {user.followings.length}
+                  </ProfileFollowingCount>
+                  フォロー中
+                </ProfileFollowing>
+                <ProfileFollower>
+                  <ProfileFollowerCount>
+                    {user.followers.length}
+                  </ProfileFollowerCount>
+                  フォロワー
+                </ProfileFollower>
+              </ProfileStatus>
+            </>
+          )}
+        </ProfileInfo>
+        <TimelineContainer>
+          <TimelineDispSelect>
+            <TimelineDisp onClick={() => setDisp(1)}>
+              <Text
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                height="100%"
+                fontWeight={disp === 1 ? "550" : "500"}
+                background={
+                  disp === 1
+                    ? "linear-gradient(transparent 90%, #99ccff 0%)"
+                    : ""
+                }
+              >
+                投稿
+              </Text>
+            </TimelineDisp>
+            <TimelineDisp onClick={() => setDisp(2)}>
+              <Text
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                height="100%"
+                fontWeight={disp === 2 ? "550" : "500"}
+                background={
+                  disp === 2
+                    ? "linear-gradient(transparent 90%, #99ccff 0%)"
+                    : ""
+                }
+              >
+                いいね
+              </Text>
+            </TimelineDisp>
+          </TimelineDispSelect>
+          {disp === 1 &&
+            timeline &&
+            timeline.map((data) => (
+              <Post post={data.post} user={data.user} key={data.post._id} />
+            ))}
+          {disp === 2 &&
+            likes &&
+            likes.map((data) => (
+              <Post post={data.post} user={data.user} key={data.post._id} />
+            ))}
+        </TimelineContainer>
+      </ProfileContainer>
     </>
   );
 };

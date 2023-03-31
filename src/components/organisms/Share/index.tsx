@@ -1,9 +1,9 @@
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
-import { setTimeline, setTimelineAll, setShareOpen } from "store/postsSlice";
+import { setTimeline, setTimelineAll, setShare } from "store/postsSlice";
 import { setToast } from "store/toastSlice";
 import { theme } from "themes";
 import styled from "styled-components";
@@ -14,6 +14,8 @@ import TextArea from "components/atoms/TextArea";
 import IconButton from "components/molecules/IconButton";
 import ImagePreview from "components/molecules/ImagePreview";
 import Separator from "components/atoms/Separator";
+import { formatDistance } from "date-fns";
+import { ja } from "date-fns/locale";
 import axios from "axios";
 
 const Modal = styled.div`
@@ -33,10 +35,14 @@ const ShareRoot = styled.div`
   padding: 16px;
   display: block;
   background-color: #fff;
-  width: 60%;
-  height: 60%;
-  border-radius: 10px;
   overflow: scroll;
+  width: 100%;
+  height: 100%;
+  @media screen and (min-width: 1024px) {
+    width: 80%;
+    height: 80%;
+    border-radius: 10px;
+  }
 
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -50,34 +56,130 @@ const CloseButtonWrapper = styled.div`
   margin-bottom: 20px;
 `;
 
+const PostWrapper = styled.div`
+  display: flex;
+`;
+
+const PostUserAvatarWrapper = styled.div`
+  flex-grow: 0;
+  flex-basis: 40px;
+  margin-right: 12px;
+  align-items: center;
+  @media screen and (min-width: 1024px) {
+    flex-basis: 48px;
+  }
+`;
+
+const PostContentWrapper = styled.div`
+  flex-grow: 1;
+  flex-basis: 0px;
+  justify-content: center;
+  font-size: 14px;
+  @media screen and (min-width: 1024px) {
+    font-size: 16px;
+  }
+`;
+
+const PostUserAvatar = styled.div`
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  width: 40px;
+  height: 40px;
+  @media screen and (min-width: 1024px) {
+    width: 48px;
+    height: 48px;
+  }
+`;
+
+const PostContentTop = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  margin-bottom: 5px;
+`;
+
+const PostUser = styled.div``;
+
+const PostContentCenter = styled.div`
+  display: block;
+  margin-bottom: 10px;
+`;
+
+const PostShopname = styled.div`
+  margin-bottom: 10px;
+`;
+
+const PostDesc = styled.div`
+  white-space: pre-wrap;
+  margin-bottom: 10px;
+`;
+
+const PostConectWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  flex-grow: 0;
+  flex-basis: 40px;
+  margin-right: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+  @media screen and (min-width: 1024px) {
+    flex-basis: 48px;
+  }
+`;
+
+const PostConect = styled.span`
+  width: 2px;
+  height: 100%;
+  background-color: ${({ theme }) => theme.colors.border};
+`;
+
 const ShareWrapper = styled.div`
   display: flex;
 `;
 
 const ShareUserAvatarWrapper = styled.div`
   flex-grow: 0;
-  flex-basis: 48px;
+  flex-basis: 40px;
   margin-right: 12px;
   align-items: center;
+  @media screen and (min-width: 1024px) {
+    flex-basis: 48px;
+  }
 `;
 
 const ShareContentWrapper = styled.div`
   flex-grow: 1;
   flex-basis: 0px;
   justify-content: center;
+  font-size: 14px;
+  @media screen and (min-width: 1024px) {
+    font-size: 16px;
+  }
 `;
 
 const ShareUserAvatar = styled.div`
   position: relative;
-  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 50%;
   overflow: hidden;
-  width: 54px;
-  height: 54px;
+  width: 40px;
+  height: 40px;
+  @media screen and (min-width: 1024px) {
+    width: 48px;
+    height: 48px;
+  }
 `;
 
-const InputWrapper = styled.div`
+type InputWrapperProps = {
+  visible: boolean;
+};
+
+const InputWrapper = styled.div<InputWrapperProps>`
   height: 50px;
+  display: ${({ visible }) => (visible ? "none" : "")};
 `;
 
 const TextAreaWrapper = styled.div`
@@ -125,7 +227,9 @@ const Share = () => {
   const IMAGE_FOLDER = process.env.NEXT_PUBLIC_IMAGE_FOLDER;
   const authUser = useSelector((state: RootState) => state.auth.authUser);
   const authToken = useSelector((state: RootState) => state.auth.token);
+  const share = useSelector((state: RootState) => state.posts.share);
   const dispatch = useDispatch();
+  const [shopname, SetShopname] = useState(share.comment.shopname);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
 
@@ -142,6 +246,7 @@ const Share = () => {
       shopname: shopname,
       desc: desc,
       img: "",
+      commentsSend: share.comment.id,
     };
     if (file) {
       const fileName = `posts/${Date.now()}-${authUser?._id}`;
@@ -172,7 +277,20 @@ const Share = () => {
           message: result.message,
         })
       );
-      dispatch(setShareOpen(false));
+      dispatch(
+        setShare({
+          open: false,
+          comment: {
+            id: "",
+            shopname: "",
+            desc: "",
+            createdAt: "",
+            name: "",
+            username: "",
+            profilePicture: "",
+          },
+        })
+      );
       const timeline = await axios
         .post(
           `/api/posts/timeline`,
@@ -186,7 +304,7 @@ const Share = () => {
           }
         )
         .then((response) => response.data);
-        const timelineAll = await axios
+      const timelineAll = await axios
         .post(
           `/api/posts/all`,
           {
@@ -211,7 +329,19 @@ const Share = () => {
   };
 
   const handlerShareClose = () => {
-    dispatch(setShareOpen(false));
+    dispatch(
+      setShare({
+        open: false,
+        comment: {
+          postid: "",
+          postShopname: "",
+          postDesc: "",
+          userName: "",
+          userUsername: "",
+          userProfilePicture: "",
+        },
+      })
+    );
   };
 
   const handleFileSet = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -232,6 +362,19 @@ const Share = () => {
     }
   }, [file]);
 
+  const time = (() => {
+    if (!share.comment.id) {
+      return;
+    }
+    if (typeof share.comment.createdAt === "string") {
+      return formatDistance(new Date(), Date.parse(share.comment.createdAt), {
+        locale: ja,
+      });
+    } else {
+      return "";
+    }
+  })();
+
   return (
     <Modal>
       <ShareRoot>
@@ -245,6 +388,52 @@ const Share = () => {
             onClick={handlerShareClose}
           />
         </CloseButtonWrapper>
+        {share.comment.id && (
+          <>
+            <PostWrapper>
+              <PostUserAvatarWrapper>
+                <PostUserAvatar>
+                  <Image
+                    src={IMAGE_FOLDER + share.comment.profilePicture}
+                    alt=""
+                    fill
+                    sizes="auto"
+                  />
+                </PostUserAvatar>
+              </PostUserAvatarWrapper>
+              <PostContentWrapper>
+                <PostContentTop>
+                  <PostUser>
+                    <Text
+                      color={theme.colors.text}
+                      fontWeight="550"
+                      marginRight="10px"
+                    >
+                      {share.comment.name}
+                    </Text>
+                    <Text color={theme.colors.subtext} marginRight="10px">
+                      @{share.comment.username}
+                    </Text>
+                    <Text color={theme.colors.subtext}>・{time}</Text>
+                  </PostUser>
+                </PostContentTop>
+                <PostContentCenter>
+                  <PostShopname>
+                    <Text>{share.comment.shopname}</Text>
+                  </PostShopname>
+                  <PostDesc>
+                    <Text>{share.comment.desc}</Text>
+                  </PostDesc>
+                </PostContentCenter>
+              </PostContentWrapper>
+            </PostWrapper>
+            <PostWrapper>
+              <PostConectWrapper>
+                <PostConect />
+              </PostConectWrapper>
+            </PostWrapper>
+          </>
+        )}
         <ShareWrapper>
           <ShareUserAvatarWrapper>
             <ShareUserAvatar>
@@ -260,7 +449,7 @@ const Share = () => {
           </ShareUserAvatarWrapper>
           <ShareContentWrapper>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <InputWrapper>
+              <InputWrapper visible={!!share.comment.shopname}>
                 <Input
                   {...register("shopname", {
                     required: {
@@ -270,9 +459,11 @@ const Share = () => {
                   })}
                   name="shopname"
                   type="text"
+                  value={shopname}
                   placeholder="店舗名を入力..."
                   borderBottom={`1px solid ${theme.colors.border}`}
                   focusUnderline
+                  onChange={(e) => SetShopname(() => e.target.value)}
                 />
               </InputWrapper>
               <ErrorMessageWrapper>

@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
 import { setToast } from "store/toastSlice";
 import useAuthGuard from "utils/useAuthGuard";
+import useGetData from "utils/useGetData";
+import useGetMenu from "utils/useGetMenu";
 import styled from "styled-components";
 import Sidebar from "components/organisms/Sidebar";
 import Header from "components/organisms/Header";
@@ -33,23 +35,41 @@ const SidebarContainer = styled.aside`
   z-index: 3;
 `;
 
-const MainContainer = styled.main`
+const MainContentContainer = styled.main`
   background-color: ${({ theme }) => theme.colors.secondary};
+  border-right: 1px solid ${({ theme }) => theme.colors.border};
   position: relative;
   display: flex;
   box-sizing: border-box;
-  flex-grow: 5;
+  flex-grow: 4;
   flex-shrink: 0;
   flex-basis: 0;
   flex-direction: column;
   align-items: flex-start;
   z-index: 0;
+  word-wrap: break-word;
+  overflow: scroll;
 `;
+
+const SubContentContainer = styled.sub`
+  background-color: ${({ theme }) => theme.colors.secondary};
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+  flex-grow: 2;
+  flex-shrink: 0;
+  flex-basis: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 0;
+  @media screen and (max-width: 1024px) {
+    display: none;
+  }
+`
 
 const HeaderContainer = styled.header`
   box-sizing: border-box;
   background-color: ${({ theme }) => theme.colors.secondary};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   width: 100%;
   height: 70px;
 `;
@@ -73,10 +93,12 @@ type LayoutProps = {
 
 const Layout = (props: LayoutProps) => {
   useAuthGuard();
+  useGetData();
+  useGetMenu();
 
   const { children } = props;
   const isLoading = useSelector((state: RootState) => state.auth.isLoading);
-  const shareOpen = useSelector((state: RootState) => state.posts.shareOpen);
+  const share = useSelector((state: RootState) => state.posts.share);
   const toastState = useSelector((state: RootState) => state.toast.state);
   const dispatch = useDispatch();
 
@@ -105,15 +127,17 @@ const Layout = (props: LayoutProps) => {
           <SidebarContainer>
             <Sidebar />
           </SidebarContainer>
-          <MainContainer>
+          <MainContentContainer>
             <HeaderContainer>
               <Header />
             </HeaderContainer>
             <ContentContainer>{children}</ContentContainer>
-          </MainContainer>
+          </MainContentContainer>
+          <SubContentContainer>
+          </SubContentContainer>
         </Container>
       )}
-      {shareOpen && <Share />}
+      {share.open && <Share />}
       {(toastState.type === "success" || toastState.type === "error") && (
         <Snackbar
           open={toastState.open}

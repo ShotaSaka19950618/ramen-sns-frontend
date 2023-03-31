@@ -1,9 +1,9 @@
-import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
-import { setTimeline, setTimelineAll } from "store/postsSlice";
+import { setTimeline, setTimelineAll, setShare } from "store/postsSlice";
 import { setToast } from "store/toastSlice";
 import { Post, User } from "types";
 import { theme } from "themes";
@@ -15,16 +15,22 @@ import { formatDistance } from "date-fns";
 import { ja } from "date-fns/locale";
 import axios from "axios";
 
-const PostRoot = styled.article`
+type PostRootProps = {
+  connect?: boolean;
+};
+
+const PostRoot = styled.article<PostRootProps>`
   position: relative;
   display: block;
   box-sizing: border-box;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  border-bottom: ${({ connect, theme }) =>
+    connect ? "" : `1px solid ${theme.colors.border}`};
   width: 100%;
   cursor: pointer;
 `;
 
 const PostWrapper = styled.div`
+  position: relative;
   padding: 16px;
   display: flex;
 `;
@@ -50,15 +56,36 @@ const PostContentContainer = styled.div`
 `;
 
 const PostUserAvatar = styled.div`
+  display: flex;
+  justify-content: center;
   position: relative;
   border-radius: 50%;
   overflow: hidden;
   width: 40px;
   height: 40px;
+  margin-bottom: 10px;
   @media screen and (min-width: 1024px) {
     width: 48px;
     height: 48px;
   }
+`;
+
+const PostConectWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  height: calc(100% - 40px);
+  align-items: center;
+`;
+
+type PostConectProps = {
+  connect?: boolean;
+};
+
+const PostConect = styled.span<PostConectProps>`
+  width: 2px;
+  height: 100%;
+  background-color: ${({ connect, theme }) =>
+    connect ? theme.colors.border : ""};
 `;
 
 const PostContentTop = styled.div`
@@ -69,7 +96,13 @@ const PostContentTop = styled.div`
   margin-bottom: 5px;
 `;
 
-const PostUser = styled.div``;
+const PostUser = styled.div`
+  display: flex;
+  flex-direction: column;
+  @media screen and (min-width: 1024px) {
+    flex-direction: row;
+  }
+`;
 
 const PostMore = styled.div`
   color: ${({ theme }) => theme.colors.subtext};
@@ -82,10 +115,6 @@ const PostMore = styled.div`
 
 const PostContentCenter = styled.div`
   display: block;
-  margin-bottom: 10px;
-`;
-
-const PostShopname = styled.div`
   margin-bottom: 10px;
 `;
 
@@ -148,10 +177,11 @@ const PostDropDownContainer = styled.div`
 type PostProps = {
   post: Post;
   user: User;
+  connect?: boolean;
 };
 
 const Post = (props: PostProps) => {
-  const { post, user } = props;
+  const { post, user, connect } = props;
   const IMAGE_FOLDER = process.env.NEXT_PUBLIC_IMAGE_FOLDER;
   const authUser = useSelector((state: RootState) => state.auth.authUser);
   const authToken = useSelector((state: RootState) => state.auth.token);
@@ -162,16 +192,15 @@ const Post = (props: PostProps) => {
   const [bookmark, setBookmark] = useState(
     post.bookmarks.includes(currentUserid)
   );
-  const [bookmarkCount, setBookmarkCount] = useState(post.bookmarks.length);
   const [follow, setFollow] = useState(user.followers.includes(currentUserid));
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     setLike(post.likes.includes(currentUserid));
     setLikeCount(post.likes.length);
     setBookmark(post.bookmarks.includes(currentUserid));
-    setBookmarkCount(post.bookmarks.length);
   }, [post, currentUserid]);
 
   useEffect(() => {
@@ -284,13 +313,33 @@ const Post = (props: PostProps) => {
     }
   })();
 
-  const handleLike = async () => {
+  const handleShareOpen = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    dispatch(
+      setShare({
+        open: true,
+        comment: {
+          id: post._id,
+          shopname: post.shopname,
+          desc: post.desc,
+          createdAt: post.createdAt,
+          name: user.name,
+          username: user.username,
+          profilePicture: user.profilePicture,
+        },
+      })
+    );
+  };
+
+  const handleLike = async (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
     await axios
       .put(
         `/api/posts/putLike`,
         {
           postid: post._id,
           userid: authUser?._id,
+          targetUserid: post.userid,
         },
         {
           headers: {
@@ -303,7 +352,8 @@ const Post = (props: PostProps) => {
     setLikeCount((likeCount) => (like ? likeCount - 1 : likeCount + 1));
   };
 
-  const handleBookmark = async () => {
+  const handleBookmark = async (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
     await axios
       .put(
         `/api/posts/putBookmark`,
@@ -319,16 +369,15 @@ const Post = (props: PostProps) => {
       )
       .then((response) => response.data);
     setBookmark((bookmark) => !bookmark);
-    setBookmarkCount((bookmarkCount) =>
-      bookmark ? bookmarkCount - 1 : bookmarkCount + 1
-    );
   };
 
-  const handleDropdownOpen = () => {
+  const handleDropdownOpen = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
     setShowDropdown(true);
   };
 
   const handleDropdownClose = (event: Event) => {
+    event.stopPropagation();
     if (!(event.target instanceof HTMLElement)) {
       return;
     }
@@ -338,19 +387,28 @@ const Post = (props: PostProps) => {
   };
 
   return (
-    <PostRoot>
+    <PostRoot
+      connect={connect}
+      onClick={() => router.push(`/status/${post._id}`)}
+    >
       <PostWrapper>
         <PostUserAvatarContainer>
-          <Link href={`/profile/${user._id}`}>
-            <PostUserAvatar>
-              <Image
-                src={IMAGE_FOLDER + user.profilePicture}
-                alt=""
-                fill
-                sizes="auto"
-              />
-            </PostUserAvatar>
-          </Link>
+          <PostUserAvatar
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/profile/${user._id}`);
+            }}
+          >
+            <Image
+              src={IMAGE_FOLDER + user.profilePicture}
+              alt=""
+              fill
+              sizes="auto"
+            />
+          </PostUserAvatar>
+          <PostConectWrapper>
+            <PostConect connect={connect} />
+          </PostConectWrapper>
         </PostUserAvatarContainer>
         <PostContentContainer>
           <PostContentTop>
@@ -363,18 +421,15 @@ const Post = (props: PostProps) => {
                 {user.name}
               </Text>
               <Text color={theme.colors.subtext} marginRight="10px">
-                @{user.username}
+                @{user.username}・{time}
               </Text>
-              <Text color={theme.colors.subtext}>・{time}</Text>
+              <Text color={theme.colors.subtext}>{post.shopname}</Text>
             </PostUser>
             <PostMore onClick={handleDropdownOpen}>
               <Icon iconType="MoreHoriz" fontSize="18px" />
             </PostMore>
           </PostContentTop>
           <PostContentCenter>
-            <PostShopname>
-              <Text>{post.shopname}</Text>
-            </PostShopname>
             <PostDesc>
               <Text>{post.desc}</Text>
             </PostDesc>
@@ -397,11 +452,11 @@ const Post = (props: PostProps) => {
             )}
           </PostContentCenter>
           <PostContentBottom>
-            <PostStatus hcolor={theme.colors.chat}>
+            <PostStatus hcolor={theme.colors.chat} onClick={handleShareOpen}>
               <PostStatusIcon hbackgroundColor={theme.colors.chatIcon}>
                 <Icon iconType="ChatBubble" fontSize="20px" />
               </PostStatusIcon>
-              <Text>{post.comments.length}</Text>
+              <Text>{post.commentsReceived.length}</Text>
             </PostStatus>
             <PostStatus
               hcolor={theme.colors.heart}
@@ -421,7 +476,6 @@ const Post = (props: PostProps) => {
               <PostStatusIcon hbackgroundColor={theme.colors.bookmarkIcon}>
                 <Icon iconType="Bookmark" fontSize="22px" />
               </PostStatusIcon>
-              <Text>{bookmarkCount}</Text>
             </PostStatus>
           </PostContentBottom>
         </PostContentContainer>

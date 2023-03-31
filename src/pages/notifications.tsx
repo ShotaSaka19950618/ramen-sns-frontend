@@ -1,34 +1,34 @@
 import type { NextPageWithLayout } from "pages/_app";
 import Head from "next/head";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "store";
-import { setMenuOpen, setMenuList } from "store/menuSlice";
 import styled from "styled-components";
 import { getLayout } from "components/templates/Layout";
-import { useEffect } from "react";
+import Notification from "components/organisms/Notification";
+
+const NotificationsContainer = styled.div`
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+`;
 
 const Notifications: NextPageWithLayout = () => {
-  const menuList = useSelector((state: RootState) => state.menu.List);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const newMenuList = menuList.map((menu) => {
-      return menu.text === "通知"
-        ? { ...menu, active: true }
-        : { ...menu, active: false };
-    });
-    if (JSON.stringify(newMenuList) !== JSON.stringify(menuList)) {
-      dispatch(setMenuOpen("通知"));
-      dispatch(setMenuList(newMenuList));
-    }
-  }, [dispatch, menuList]);
+  const notifications = useSelector(
+    (state: RootState) => state.posts.notifications
+  );
 
   return (
     <>
       <Head>
         <title>通知 / RAMEN SNS</title>
       </Head>
-      <div></div>
+      <NotificationsContainer>
+        {notifications.map((data) => (
+          <Notification
+            notification={data.notification}
+            user={data.user}
+            key={data.notification._id}
+          />
+        ))}
+      </NotificationsContainer>
     </>
   );
 };

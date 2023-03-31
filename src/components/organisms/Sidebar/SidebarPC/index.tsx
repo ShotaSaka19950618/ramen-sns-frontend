@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
 import { setAuthUser } from "store/authSlice";
-import { setShareOpen } from "store/postsSlice";
+import { setShare } from "store/postsSlice";
 import type { Menu } from "types";
 import { theme } from "themes";
 import styled from "styled-components";
@@ -143,7 +143,20 @@ const SidebarPC = () => {
   };
 
   const handleShareOpen = () => {
-    dispatch(setShareOpen(true));
+    dispatch(
+      setShare({
+        open: true,
+        comment: {
+          id: "",
+          shopname: "",
+          desc: "",
+          createdAt: "",
+          name: "",
+          username: "",
+          profilePicture: "",
+        },
+      })
+    );
   };
 
   const handleDropdownOpen = () => {

@@ -8,15 +8,13 @@ import {
   setIsLoading,
   setIsSigninLoading,
 } from "store/authSlice";
-import { setMenuList } from "store/menuSlice";
 import axios from "axios";
 import { parseCookies } from "nookies";
 
 const useAuthGuard = (): void => {
   const accessToken = parseCookies().accessToken;
-  const dispatch = useDispatch();
   const authUser = useSelector((state: RootState) => state.auth.authUser);
-  const menuList = useSelector((state: RootState) => state.menu.List);
+  const dispatch = useDispatch();
   const router = useRouter();
   const redirectTopPage = useCallback(() => {
     router.push("/");
@@ -29,7 +27,6 @@ const useAuthGuard = (): void => {
   useEffect(() => {
     if (!authUser) {
       if (currentPath === "/signin" || currentPath === "/register") {
-        dispatch(setIsSigninLoading(true));
         if (accessToken) {
           const getAuthUser = async () => {
             const authUser = await axios
@@ -46,12 +43,7 @@ const useAuthGuard = (): void => {
             if (authUser.success) {
               dispatch(setToken(accessToken));
               dispatch(setAuthUser(authUser.data));
-              const newMenuList = menuList.map((menu) => {
-                return menu.text === "プロフィール"
-                  ? { ...menu, url: `/profile/${authUser.data._id}` }
-                  : menu;
-              });
-              dispatch(setMenuList(newMenuList));
+              dispatch(setIsLoading(false));
               redirectTopPage();
             } else {
               dispatch(setIsSigninLoading(false));
@@ -62,7 +54,6 @@ const useAuthGuard = (): void => {
           dispatch(setIsSigninLoading(false));
         }
       } else {
-        dispatch(setIsLoading(true));
         if (accessToken) {
           const getAuthUser = async () => {
             const authUser = await axios
@@ -79,12 +70,6 @@ const useAuthGuard = (): void => {
             if (authUser.success) {
               dispatch(setToken(accessToken));
               dispatch(setAuthUser(authUser.data));
-              const newMenuList = menuList.map((menu) => {
-                return menu.text === "プロフィール"
-                  ? { ...menu, url: `/profile/${authUser.data._id}` }
-                  : menu;
-              });
-              dispatch(setMenuList(newMenuList));
               dispatch(setIsLoading(false));
             } else {
               redirectSigninPage();
@@ -102,7 +87,6 @@ const useAuthGuard = (): void => {
     redirectTopPage,
     authUser,
     accessToken,
-    menuList,
     currentPath,
   ]);
 };

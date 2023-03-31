@@ -21,18 +21,38 @@ export type Post = {
   shopname: string;
   desc: string;
   img: string;
-  comments: string[];
+  commentsSend: string[];
+  commentsReceived: string[];
   likes: string[];
   bookmarks: string[];
   createdAt?: string;
   updatedAt?: string;
 };
 
+// 通知
+export type Notification = {
+  _id: string;
+  useridSend: string[];
+  useridReceived: string[];
+  postid: string;
+  postDesc: string;
+  desc: string;
+  check: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 // タイムライン
 export type Timeline = {
   post: Post;
   user: User;
-}[];
+};
+
+// 通知リスト
+export type Notifications = {
+  notification: Notification;
+  user: User;
+}
 
 // アイコン
 export type Icon =

@@ -14,12 +14,12 @@ const HeaderTitle = styled.div`
 `
 
 const Header = () => {
-  const menuOpen = useSelector((state: RootState) => state.menu.Open)
+  const title = useSelector((state: RootState) => state.menu.title)
 
   return (
     <HeaderRoot>
       <HeaderTitle>
-        <Title fontSize="24px" width="100%">{menuOpen}</Title>
+        <Title fontSize="24px" width="100%">{title}</Title>
       </HeaderTitle>
     </HeaderRoot>
   );

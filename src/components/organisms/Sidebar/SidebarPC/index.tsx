@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
 import { setAuthUser } from "store/authSlice";
-import { setShare } from "store/postsSlice";
+import { setShare } from "store/menuSlice";
 import type { Menu } from "types";
 import { theme } from "themes";
 import styled from "styled-components";
@@ -127,9 +127,9 @@ const SideberDropDownContainer = styled.div`
 const SidebarPC = () => {
   const IMAGE_FOLDER = process.env.NEXT_PUBLIC_IMAGE_FOLDER;
   const authUser = useSelector((state: RootState) => state.auth.authUser);
-  const menuList = useSelector((state: RootState) => state.menu.List);
   const dispatch = useDispatch();
   const router = useRouter();
+  const currentPath = router.asPath;
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -137,10 +137,6 @@ const SidebarPC = () => {
     document.addEventListener("mousedown", handleDropdownClose);
     return () => document.removeEventListener("mousedown", handleDropdownClose);
   }, []);
-
-  const handleMenuClick = (url: string) => {
-    router.push(url);
-  };
 
   const handleShareOpen = () => {
     dispatch(
@@ -172,6 +168,48 @@ const SidebarPC = () => {
     }
   };
 
+  const menuList: Menu[] = [
+    {
+      iconType: "Home",
+      action: () => {
+        router.push("/");
+      },
+      text: "ホーム",
+      active: currentPath === "/",
+    },
+    {
+      iconType: "Notifications",
+      action: () => {
+        router.push("/notifications");
+      },
+      text: "通知",
+      active: currentPath === "/notifications",
+    },
+    {
+      iconType: "Bookmark",
+      action: () => {
+        router.push("/bookmark");
+      },
+      text: "ブックマーク",
+      active: currentPath === "/bookmark",
+    },
+    {
+      iconType: "Person",
+      action: () => {
+        router.push(`/profile/${authUser?._id}`);
+      },
+      text: "プロフィール",
+      active: currentPath === `/profile/${authUser?._id}`,
+    },
+    {
+      iconType: "Settings",
+      action: () => {
+      },
+      text: "設定",
+      active: false,
+    },
+  ];
+
   const dropdownMenu = [
     {
       item: "サインアウト",
@@ -195,7 +233,7 @@ const SidebarPC = () => {
             return (
               <SidebarLinkItem
                 active={menu.active}
-                onClick={() => handleMenuClick(menu.url)}
+                onClick={menu.action}
                 key={menu.text}
               >
                 <Icon

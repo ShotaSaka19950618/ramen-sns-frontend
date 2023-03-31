@@ -77,7 +77,7 @@ export type Icon =
 // メニュー
 export type Menu = {
   iconType: Icon;
-  url: string;
+  action: () => void;
   text: string;
   active: boolean;
 };

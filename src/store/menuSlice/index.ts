@@ -1,60 +1,59 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { Menu } from "types";
 
 export interface MenuState {
-  Open: string;
-  List: Menu[];
+  title: string;
+  share: {
+    open: boolean;
+    comment: {
+      id: string;
+      shopname: string;
+      desc: string;
+      name: string;
+      username: string;
+      profilePicture: string;
+      createdAt: string;
+    };
+  };
+  setting: {
+    open: boolean;
+  };
 }
 
 const initialState: MenuState = {
-  Open: "ホーム",
-  List: [
-    {
-      iconType: "Home",
-      url: "/",
-      text: "ホーム",
-      active: true,
+  title: "ホーム",
+  share: {
+    open: false,
+    comment: {
+      id: "",
+      shopname: "",
+      desc: "",
+      createdAt: "",
+      name: "",
+      username: "",
+      profilePicture: "",
     },
-    {
-      iconType: "Notifications",
-      url: "/notifications",
-      text: "通知",
-      active: false,
-    },
-    {
-      iconType: "Bookmark",
-      url: "/bookmark",
-      text: "ブックマーク",
-      active: false,
-    },
-    {
-      iconType: "Person",
-      url: "/profile",
-      text: "プロフィール",
-      active: false,
-    },
-    {
-      iconType: "Settings",
-      url: "/settings",
-      text: "設定",
-      active: false,
-    },
-  ],
+  },
+  setting: {
+    open: false,
+  },
 };
 
 const menuSlice = createSlice({
   name: "menu",
   initialState,
   reducers: {
-    setMenuOpen: (state, action) => {
-      state.Open = action.payload;
+    setTitle: (state, action) => {
+      state.title = action.payload;
     },
-    setMenuList: (state, action) => {
-      state.List = action.payload;
+    setShare: (state, action) => {
+      state.share = action.payload;
+    },
+    setSetting: (state, action) => {
+      state.setting = action.payload;
     },
   },
 });
 
-export const { setMenuOpen, setMenuList } = menuSlice.actions;
+export const { setTitle, setShare, setSetting } = menuSlice.actions;
 
 export default menuSlice.reducer;

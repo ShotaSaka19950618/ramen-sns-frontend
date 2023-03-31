@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
-import { setTimeline, setTimelineAll, setShare } from "store/postsSlice";
+import { setTimeline, setTimelineAll } from "store/postsSlice";
+import { setShare } from "store/menuSlice";
 import { setToast } from "store/toastSlice";
 import { theme } from "themes";
 import styled from "styled-components";
@@ -227,7 +228,7 @@ const Share = () => {
   const IMAGE_FOLDER = process.env.NEXT_PUBLIC_IMAGE_FOLDER;
   const authUser = useSelector((state: RootState) => state.auth.authUser);
   const authToken = useSelector((state: RootState) => state.auth.token);
-  const share = useSelector((state: RootState) => state.posts.share);
+  const share = useSelector((state: RootState) => state.menu.share);
   const dispatch = useDispatch();
   const [shopname, SetShopname] = useState(share.comment.shopname);
   const [file, setFile] = useState<File | null>(null);

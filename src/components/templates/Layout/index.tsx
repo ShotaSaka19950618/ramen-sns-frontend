@@ -98,7 +98,7 @@ const Layout = (props: LayoutProps) => {
 
   const { children } = props;
   const isLoading = useSelector((state: RootState) => state.auth.isLoading);
-  const share = useSelector((state: RootState) => state.posts.share);
+  const share = useSelector((state: RootState) => state.menu.share);
   const toastState = useSelector((state: RootState) => state.toast.state);
   const dispatch = useDispatch();
 

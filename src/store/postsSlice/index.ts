@@ -2,18 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { Timeline, Notifications } from "types";
 
 export interface PostsState {
-  share: {
-    open: boolean;
-    comment: {
-      id: string;
-      shopname: string;
-      desc: string;
-      name: string;
-      username: string;
-      profilePicture: string;
-      createdAt: string;
-    };
-  };
   timeline: Timeline[];
   timelineAll: Timeline[];
   bookmarks: Timeline[];
@@ -25,18 +13,6 @@ export interface PostsState {
 }
 
 const initialState: PostsState = {
-  share: {
-    open: false,
-    comment: {
-      id: "",
-      shopname: "",
-      desc: "",
-      createdAt: "",
-      name: "",
-      username: "",
-      profilePicture: "",
-    },
-  },
   timeline: [],
   timelineAll: [],
   bookmarks: [],
@@ -48,9 +24,6 @@ const postsSlice = createSlice({
   name: "posts",
   initialState,
   reducers: {
-    setShare: (state, action) => {
-      state.share = action.payload;
-    },
     setTimeline: (state, action) => {
       state.timeline = action.payload;
     },
@@ -70,7 +43,6 @@ const postsSlice = createSlice({
 });
 
 export const {
-  setShare,
   setTimeline,
   setTimelineAll,
   setBookmarks,

@@ -71,7 +71,9 @@ const Status: NextPageWithLayout = () => {
           </CommentText>
         )}
         {child &&
-          child.map((data) => <Post post={data.post} user={data.user} />)}
+          child.map((data) => (
+            <Post post={data.post} user={data.user} key={data.post._id} />
+          ))}
       </StatusContainer>
     </>
   );

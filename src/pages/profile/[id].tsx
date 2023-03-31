@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
-import { setMenuOpen, setMenuList } from "store/menuSlice";
+import { setTitle } from "store/menuSlice";
 import { User, Timeline } from "types";
 import styled from "styled-components";
 import { getLayout } from "components/templates/Layout";
@@ -114,7 +114,6 @@ const Profile: NextPageWithLayout = () => {
   const IMAGE_FOLDER = process.env.NEXT_PUBLIC_IMAGE_FOLDER;
   const authUser = useSelector((state: RootState) => state.auth.authUser);
   const authToken = useSelector((state: RootState) => state.auth.token);
-  const menuList = useSelector((state: RootState) => state.menu.List);
   const dispatch = useDispatch();
   const [user, SetUser] = useState<User>();
   const [timeline, setTimeline] = useState<Timeline[]>();
@@ -139,27 +138,16 @@ const Profile: NextPageWithLayout = () => {
             }
           )
           .then((response) => response.data);
-        if (user.success) {
-          SetUser(user.data);
-          const newMenuList = menuList.map((menu) => {
-            if (authUser._id === user.data._id) {
-              dispatch(setMenuOpen("マイプロフィール"));
-              return menu.text === "プロフィール"
-                ? { ...menu, active: true }
-                : { ...menu, active: false };
-            } else {
-              dispatch(setMenuOpen(`${user.data.name}のプロフィール`));
-              return { ...menu, active: false };
-            }
-          });
-          if (JSON.stringify(newMenuList) !== JSON.stringify(menuList)) {
-            dispatch(setMenuList(newMenuList));
-          }
+        if (authUser._id === user.data._id) {
+          dispatch(setTitle(`マイプロフィール`));
+        } else {
+          dispatch(setTitle(`${user.data.username}のプロフィール`));
         }
+        SetUser(user.data);
       };
       getUser();
     }
-  }, [dispatch, id, authUser, authToken, menuList]);
+  }, [dispatch, id, authUser, authToken]);
 
   useEffect(() => {
     if (id) {

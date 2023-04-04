@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: false,
   images: {
-    domains: ["localhost"],
+    domains: ["ramen-sns-s3.s3.ap-northeast-1.amazonaws.com"],
   },
   compiler: {
     styledComponents: true,

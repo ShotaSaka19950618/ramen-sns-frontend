@@ -3,7 +3,7 @@ import axios from "axios";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const result = await axios
-    .delete(`${process.env.BACKEND_ENDPOINT}/api/posts/${req.body.postid}`, {
+    .delete(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/api/posts/${req.body.postid}`, {
       headers: {
         Authorization: `Bearer ${req.headers["authorization"]}`,
       },

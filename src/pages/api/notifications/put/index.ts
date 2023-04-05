@@ -4,7 +4,7 @@ import axios from "axios";
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const result = await axios
     .put(
-      `${process.env.BACKEND_ENDPOINT}/api/notifications/${req.body.userid}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/api/notifications/${req.body.userid}`,
       {
         headers: {
           Authorization: `Bearer ${req.headers["authorization"]}`,

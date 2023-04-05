@@ -4,7 +4,7 @@ import axios from "axios";
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const result = await axios
     .put(
-      `${process.env.BACKEND_ENDPOINT}/api/users/${req.body.userid}/follow`,
+      `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/api/users/${req.body.userid}/follow`,
       {
         targetUserid: req.body.targetUserid,
       },

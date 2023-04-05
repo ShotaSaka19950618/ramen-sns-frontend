@@ -3,7 +3,7 @@ import axios from "axios";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const result = await axios
-    .post(`${process.env.BACKEND_ENDPOINT}/api/auth/signin`, req.body)
+    .post(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/api/auth/signin`, req.body)
     .then((response) => response.data);
   return res.status(200).json(result);
 };

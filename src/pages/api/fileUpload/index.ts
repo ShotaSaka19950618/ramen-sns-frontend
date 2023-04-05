@@ -7,7 +7,7 @@ export const config = {
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const result = await axios
-    .post(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/api/upload/`, req, {
+    .post(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}api/upload/`, req, {
       headers: {
         "Content-Type": req.headers["content-type"],
         Authorization: `Bearer ${req.headers["authorization"]}`,

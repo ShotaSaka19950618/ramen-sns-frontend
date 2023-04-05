@@ -4,7 +4,7 @@ import axios from "axios";
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const result = await axios
     .get(
-      `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}/api/posts/${req.body.userid}/timeline`,
+      `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}api/posts/${req.body.userid}/timeline`,
       {
         headers: {
           Authorization: `Bearer ${req.headers["authorization"]}`,

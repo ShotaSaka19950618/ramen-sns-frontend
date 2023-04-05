@@ -15,7 +15,7 @@ const SigninPage: NextPageWithLayout = () => {
   // サインイン処理
   const handleSignin = async (username: string, password: string) => {
     const result = await axios
-      .post(`${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}api/auth/signin`, {
+      .post("/api/auth/signin", {
         username: username,
         password: password,
       })

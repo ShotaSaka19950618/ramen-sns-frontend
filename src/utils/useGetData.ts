@@ -22,15 +22,18 @@ const useGetData = (): void => {
     if (authUser) {
       const getTimeline = async () => {
         const timeline = await axios
-        .get(
-          `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}api/posts/${authUser._id}/timeline`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
+          .post(
+            `/api/posts/timeline`,
+            {
+              userid: authUser._id,
             },
-          }
-        )
-        .then((response) => response.data);
+            {
+              headers: {
+                Authorization: authToken,
+              },
+            }
+          )
+          .then((response) => response.data);
         dispatch(setTimeline(timeline.data));
       };
       getTimeline();
@@ -41,15 +44,18 @@ const useGetData = (): void => {
     if (authUser) {
       const getTimelineAll = async () => {
         const timelineAll = await axios
-        .get(
-          `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}api/posts/${authUser._id}/all`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
+          .post(
+            `/api/posts/all`,
+            {
+              userid: authUser._id,
             },
-          }
-        )
-        .then((response) => response.data);
+            {
+              headers: {
+                Authorization: authToken,
+              },
+            }
+          )
+          .then((response) => response.data);
         dispatch(setTimelineAll(timelineAll.data));
       };
       getTimelineAll();
@@ -60,15 +66,18 @@ const useGetData = (): void => {
     if (authUser) {
       const getBookmarks = async () => {
         const bookmarks = await axios
-        .get(
-          `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}api/posts/${authUser._id}/bookmark`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
+          .post(
+            `/api/posts/getBookmark`,
+            {
+              userid: authUser._id,
             },
-          }
-        )
-        .then((response) => response.data);
+            {
+              headers: {
+                Authorization: authToken,
+              },
+            }
+          )
+          .then((response) => response.data);
         dispatch(setBookmarks(bookmarks.data));
       };
       getBookmarks();
@@ -79,15 +88,18 @@ const useGetData = (): void => {
     if (authUser) {
       const getNotifications = async () => {
         const notifications = await axios
-        .get(
-          `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}api/notifications/${authUser._id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
+          .post(
+            `/api/notifications/get`,
+            {
+              userid: authUser._id,
             },
-          }
-        )
-        .then((response) => response.data);
+            {
+              headers: {
+                Authorization: authToken,
+              },
+            }
+          )
+          .then((response) => response.data);
         dispatch(setNotifications(notifications.data));
       };
       getNotifications();
@@ -98,15 +110,18 @@ const useGetData = (): void => {
     if (authUser) {
       const getRanking = async () => {
         const ranking = await axios
-        .get(
-          `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}api/posts/${authUser._id}/ranking`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
+          .post(
+            `/api/posts/ranking`,
+            {
+              userid: authUser._id,
             },
-          }
-        )
-        .then((response) => response.data);
+            {
+              headers: {
+                Authorization: authToken,
+              },
+            }
+          )
+          .then((response) => response.data);
         dispatch(setRanking(ranking.data));
       };
       getRanking();

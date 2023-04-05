@@ -132,14 +132,15 @@ const Notification = (props: NotificationProps) => {
       item: follow ? "フォロー解除" : "フォロー",
       onclick: async () => {
         const result = await axios
-          .put(
-            `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}api/users/${authUser?._id}/follow`,
+          .post(
+            `/api/users/follow`,
             {
+              userid: authUser?._id,
               targetUserid: notification.useridSend,
             },
             {
               headers: {
-                Authorization: `Bearer ${authToken}`,
+                Authorization: authToken,
               },
             }
           )

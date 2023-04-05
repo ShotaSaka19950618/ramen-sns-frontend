@@ -30,11 +30,12 @@ const useAuthGuard = (): void => {
         if (accessToken) {
           const getAuthUser = async () => {
             const authUser = await axios
-              .get(
-                `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}api/auth/user`,
+              .post(
+                "/api/auth/user",
+                {},
                 {
                   headers: {
-                    Authorization: `Bearer ${accessToken}`,
+                    Authorization: accessToken,
                   },
                 }
               )
@@ -56,11 +57,12 @@ const useAuthGuard = (): void => {
         if (accessToken) {
           const getAuthUser = async () => {
             const authUser = await axios
-              .get(
-                `${process.env.NEXT_PUBLIC_BACKEND_ENDPOINT}api/auth/user`,
+              .post(
+                "/api/auth/user",
+                {},
                 {
                   headers: {
-                    Authorization: `Bearer ${accessToken}`,
+                    Authorization: accessToken,
                   },
                 }
               )

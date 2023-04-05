@@ -19,7 +19,7 @@ const RegisterPage: NextPageWithLayout = (props) => {
     password: string
   ) => {
     const result = await axios
-      .post("/api/auth/register", {
+      .post("api/auth/register", {
         username: username,
         name: name,
         password: password,

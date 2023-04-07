@@ -178,27 +178,36 @@ type InputWrapperProps = {
 };
 
 const InputWrapper = styled.div<InputWrapperProps>`
+  width: 90%;
   height: 50px;
   display: ${({ visible }) => (visible ? "none" : "")};
+  margin-bottom: 20px;
 `;
 
 const TextAreaWrapper = styled.div`
+  width: 90%;
   height: 150px;
+  margin-bottom: 20px;
 `;
 
 const ErrorMessageWrapper = styled.div`
-  margin: 10px 0;
-  width: 80%;
+  margin-left: 10px;
+  margin-bottom: 20px;
+  width: 90%;
 `;
 
 const ButtonWrapper = styled.div`
+  width: 90%;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
 `;
 
 const ImageButtonWrapper = styled.div`
   flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const ShareButtonWrapper = styled.div`

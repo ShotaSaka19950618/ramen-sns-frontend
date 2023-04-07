@@ -124,6 +124,14 @@ const SideberDropDownContainer = styled.div`
   width: 250px;
 `;
 
+const Modal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+`;
+
 const SidebarPC = () => {
   const IMAGE_FOLDER = process.env.NEXT_PUBLIC_IMAGE_FOLDER;
   const authUser = useSelector((state: RootState) => state.auth.authUser);
@@ -203,8 +211,7 @@ const SidebarPC = () => {
     },
     {
       iconType: "Settings",
-      action: () => {
-      },
+      action: () => {},
       text: "設定",
       active: false,
     },
@@ -278,9 +285,12 @@ const SidebarPC = () => {
             </SidebarUser>
           )}
           {showDropdown && (
-            <SideberDropDownContainer ref={dropdownRef}>
-              <DropdownMenu menu={dropdownMenu} />
-            </SideberDropDownContainer>
+            <>
+              <Modal />
+              <SideberDropDownContainer ref={dropdownRef}>
+                <DropdownMenu menu={dropdownMenu} />
+              </SideberDropDownContainer>
+            </>
           )}
         </SidebarUserWrapper>
       </SidebarNav>

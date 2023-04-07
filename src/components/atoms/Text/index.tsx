@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 type TextProps = React.ComponentPropsWithoutRef<"span"> & {
   display?: string;
+  flex?: string;
   alignItems?: string;
   justifyContent?: string;
   fontSize?: string;
@@ -31,6 +32,7 @@ type TextProps = React.ComponentPropsWithoutRef<"span"> & {
 
 const StyledText = styled.span<TextProps>`
   display: ${({ display }) => display};
+  flex: ${({ flex }) => flex};
   align-items: ${({ alignItems }) => alignItems};
   justify-content: ${({ justifyContent }) => justifyContent};
   font-size: ${({ fontSize }) => fontSize};

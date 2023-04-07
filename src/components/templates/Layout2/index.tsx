@@ -13,7 +13,6 @@ const Container = styled.div`
   flex-direction: column;
   width: 100vw;
   height: 100dvh;
-  background-color: ${({ theme }) => theme.colors.secondary};
   @media screen and (min-width: 1024px) {
     flex-direction: row;
   }
@@ -25,16 +24,16 @@ const IntroductionContainer = styled.div`
   flex: 1;
   flex-direction: column;
   justify-content: center;
-  text-align: center;
+  align-items: center;
 `;
 
 const ContentContainer = styled.div`
   display: flex;
   height: 100%;
-  margin: 0 auto;
   flex: 1;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 `;
 
 const IntroductionLog = styled.h3`

@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
-import { setTitle } from "store/menuSlice";
+import { setTitle, setBackurl } from "store/menuSlice";
 import { User, Timeline } from "types";
 import styled from "styled-components";
 import { getLayout } from "components/templates/Layout";
@@ -114,12 +114,14 @@ const Profile: NextPageWithLayout = () => {
   const IMAGE_FOLDER = process.env.NEXT_PUBLIC_IMAGE_FOLDER;
   const authUser = useSelector((state: RootState) => state.auth.authUser);
   const authToken = useSelector((state: RootState) => state.auth.token);
+  const refresh = useSelector((state: RootState) => state.posts.timeline);
   const dispatch = useDispatch();
   const [user, SetUser] = useState<User>();
   const [timeline, setTimeline] = useState<Timeline[]>();
   const [likes, setLikes] = useState<Timeline[]>();
   const [disp, setDisp] = useState(1);
   const router = useRouter();
+  const currentPath = router.asPath;
   const { id } = router.query;
 
   useEffect(() => {
@@ -143,6 +145,7 @@ const Profile: NextPageWithLayout = () => {
         } else {
           dispatch(setTitle(`${user.data.username}のプロフィール`));
         }
+        dispatch(setBackurl(currentPath));
         SetUser(user.data);
       };
       getUser();
@@ -169,7 +172,7 @@ const Profile: NextPageWithLayout = () => {
       };
       getTimeline();
     }
-  }, [id, authToken, disp]);
+  }, [id, authToken, refresh, disp]);
 
   useEffect(() => {
     if (id) {
@@ -191,7 +194,7 @@ const Profile: NextPageWithLayout = () => {
       };
       getLikes();
     }
-  }, [id, authToken, disp]);
+  }, [id, authToken, refresh, disp]);
 
   return (
     <>

@@ -26,6 +26,7 @@ const CommentText = styled.div`
 
 const Status: NextPageWithLayout = () => {
   const authToken = useSelector((state: RootState) => state.auth.token);
+  const backurl = useSelector((state: RootState) => state.menu.backurl);
   const [target, setTarget] = useState<Timeline>();
   const [parent, setParent] = useState<Timeline>();
   const [child, setChild] = useState<Timeline[]>();
@@ -49,9 +50,13 @@ const Status: NextPageWithLayout = () => {
             }
           )
           .then((response) => response.data);
-        setTarget(post.data.target);
-        setParent(post.data.parent);
-        setChild(post.data.child);
+        if (post.success) {
+          setTarget(post.data.target);
+          setParent(post.data.parent);
+          setChild(post.data.child);
+        } else {
+          router.push(backurl);
+        }
       };
       getPost();
     }
@@ -65,7 +70,7 @@ const Status: NextPageWithLayout = () => {
       <StatusContainer>
         {parent && <Post post={parent.post} user={parent.user} connect />}
         {target && <Post post={target.post} user={target.user} />}
-        {child?.length !== 0 && (
+        {child && child?.length !== 0 && (
           <CommentText>
             <Text fontWeight="550">COMMENTS</Text>
           </CommentText>

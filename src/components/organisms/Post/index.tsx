@@ -168,6 +168,14 @@ const PostStatusIcon = styled.div<PostStatusIConProps>`
   }
 `;
 
+const Modal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+`;
+
 const PostDropDownContainer = styled.div`
   position: absolute;
   top: 30px;
@@ -186,6 +194,7 @@ const Post = (props: PostProps) => {
   const IMAGE_FOLDER = process.env.NEXT_PUBLIC_IMAGE_FOLDER;
   const authUser = useSelector((state: RootState) => state.auth.authUser);
   const authToken = useSelector((state: RootState) => state.auth.token);
+  const backurl = useSelector((state: RootState) => state.menu.backurl);
   const dispatch = useDispatch();
   const currentUserid = authUser?._id || "";
   const [like, setLike] = useState(post.likes.includes(currentUserid));
@@ -275,6 +284,7 @@ const Post = (props: PostProps) => {
                 })
               );
               setShowDropdown(false);
+              router.push(`${backurl}`);
             }
           },
         },
@@ -482,9 +492,12 @@ const Post = (props: PostProps) => {
         </PostContentContainer>
       </PostWrapper>
       {showDropdown && (
-        <PostDropDownContainer ref={dropdownRef}>
-          <DropdownMenu menu={menu} />
-        </PostDropDownContainer>
+        <>
+          <Modal />
+          <PostDropDownContainer ref={dropdownRef}>
+            <DropdownMenu menu={menu} />
+          </PostDropDownContainer>
+        </>
       )}
     </PostRoot>
   );

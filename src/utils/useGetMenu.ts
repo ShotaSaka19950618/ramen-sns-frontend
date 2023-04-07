@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
-import { setTitle } from "store/menuSlice";
+import { setTitle, setBackurl } from "store/menuSlice";
 
 const useGetMenu = (): void => {
   const authUser = useSelector((state: RootState) => state.auth.authUser);
@@ -13,14 +13,17 @@ const useGetMenu = (): void => {
   useEffect(() => {
     if (currentPath === "/") {
       dispatch(setTitle("ホーム"));
+      dispatch(setBackurl(currentPath));
     }
 
     if (currentPath === "/notifications") {
       dispatch(setTitle("通知"));
+      dispatch(setBackurl(currentPath));
     }
 
     if (currentPath === "/bookmark") {
       dispatch(setTitle("ブックマーク"));
+      dispatch(setBackurl(currentPath));
     }
 
     if (currentPath.indexOf("/status") !== -1) {

@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export interface MenuState {
   title: string;
+  backurl: string;
   share: {
     open: boolean;
     comment: {
@@ -21,6 +22,7 @@ export interface MenuState {
 
 const initialState: MenuState = {
   title: "ホーム",
+  backurl: "",
   share: {
     open: false,
     comment: {
@@ -45,6 +47,9 @@ const menuSlice = createSlice({
     setTitle: (state, action) => {
       state.title = action.payload;
     },
+    setBackurl: (state, action) => {
+      state.backurl = action.payload;
+    },
     setShare: (state, action) => {
       state.share = action.payload;
     },
@@ -54,6 +59,6 @@ const menuSlice = createSlice({
   },
 });
 
-export const { setTitle, setShare, setSetting } = menuSlice.actions;
+export const { setTitle, setBackurl, setShare, setSetting } = menuSlice.actions;
 
 export default menuSlice.reducer;

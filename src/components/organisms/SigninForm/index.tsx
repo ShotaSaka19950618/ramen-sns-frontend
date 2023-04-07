@@ -6,22 +6,26 @@ import Input from "components/atoms/Input";
 import Text from "components/atoms/Text";
 import Button from "components/atoms/Button";
 
+const FormWrapper = styled.form`
+  width: 100%;
+`
+
 const InputWrapper = styled.div`
-  margin: 10px auto;
-  width: 80%;
+  margin: 20px auto;
+  width: 65%;
 `;
 const ErrorMessageWrapper = styled.div`
   margin: 10px auto;
-  width: 80%;
+  width: 65%;
 `;
 
 const SigninButtonWrapper = styled.div`
-  margin: 10px auto;
-  width: 80%;
+  margin: 20px auto;
+  width: 65%;
+  height: 35px;
 `;
 
 const TextWrapper = styled.div`
-  margin: 0 auto;
   text-align: center;
 `;
 
@@ -53,7 +57,7 @@ const SigninForm = (props: SigninFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <FormWrapper onSubmit={handleSubmit(onSubmit)}>
       <InputWrapper>
         <Input
           {...register("username", {
@@ -65,6 +69,8 @@ const SigninForm = (props: SigninFormProps) => {
           name="username"
           type="text"
           placeholder="ユーザー名"
+          borderBottom={`1px solid ${theme.colors.border}`}
+          focusUnderline
         />
       </InputWrapper>
       <ErrorMessageWrapper>
@@ -83,6 +89,8 @@ const SigninForm = (props: SigninFormProps) => {
           name="password"
           type="password"
           placeholder="パスワード"
+          borderBottom={`1px solid ${theme.colors.border}`}
+          focusUnderline
         />
       </InputWrapper>
       <ErrorMessageWrapper>
@@ -105,7 +113,7 @@ const SigninForm = (props: SigninFormProps) => {
           <StyledLink href="/register">登録</StyledLink>してください。
         </Text>
       </TextWrapper>
-    </form>
+    </FormWrapper>
   );
 };
 

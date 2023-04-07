@@ -10,6 +10,7 @@ import Sidebar from "components/organisms/Sidebar";
 import Header from "components/organisms/Header";
 import Loader from "components/organisms/Loader";
 import Share from "components/organisms/Share";
+import Ranking from "components/organisms/Ranking";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 
@@ -21,7 +22,6 @@ const Container = styled.div`
 `;
 
 const SidebarContainer = styled.aside`
-  background-color: ${({ theme }) => theme.colors.secondary};
   border-right: 1px solid ${({ theme }) => theme.colors.border};
   position: relative;
   display: flex;
@@ -36,7 +36,6 @@ const SidebarContainer = styled.aside`
 `;
 
 const MainContentContainer = styled.main`
-  background-color: ${({ theme }) => theme.colors.secondary};
   border-right: 1px solid ${({ theme }) => theme.colors.border};
   position: relative;
   display: flex;
@@ -52,7 +51,6 @@ const MainContentContainer = styled.main`
 `;
 
 const SubContentContainer = styled.sub`
-  background-color: ${({ theme }) => theme.colors.secondary};
   position: relative;
   display: flex;
   box-sizing: border-box;
@@ -69,7 +67,6 @@ const SubContentContainer = styled.sub`
 
 const HeaderContainer = styled.header`
   box-sizing: border-box;
-  background-color: ${({ theme }) => theme.colors.secondary};
   width: 100%;
   height: 70px;
 `;
@@ -134,6 +131,7 @@ const Layout = (props: LayoutProps) => {
             <ContentContainer>{children}</ContentContainer>
           </MainContentContainer>
           <SubContentContainer>
+            <Ranking />
           </SubContentContainer>
         </Container>
       )}

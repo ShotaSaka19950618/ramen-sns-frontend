@@ -1,42 +1,45 @@
 # ramen-sns
- 食べたラーメンを投稿するサイトです。<br>
- ラーメン好きな人間が周りに多いため、食べたものを共有したいと思い作成しました。<br>
- twitterと似た感覚で操作できるよう意識して作成しています。<br>
- レスポンシブ対応しているのでスマホからもご確認いただけます。<br>
+食べたラーメンを投稿するサイトです。<br>
+ラーメン好きな人間が周りに多いため、食べたものを共有したいと思い作成しました。<br>
+twitter と似た感覚で操作できるよう意識して作成しています。<br>
+レスポンシブ対応しているのでスマホからもご確認いただけます。<br>
+<table><tr><td>
 <img width="1467" alt="スクリーンショット 2023-04-07 15 14 53" src="https://user-images.githubusercontent.com/110725851/230566937-39df9b62-a5d5-4c75-ae4a-0696f16eed38.png">
+</td></tr></table>
 
 # URL
 https://www.ramen-sns.com/<br>
 リンクをクリックするとログイン画面に飛びます。<br>
 下記のアカウントをご使用ください。<br>
-  ユーザー名：demo1<br>
-  パスワード：abcdefgh<br>
+ユーザー名：demo1<br>
+パスワード：abcdefgh<br>
 （『アカウントをお持ちでない場合は登録してください。』のリンクからアカウントを作成することも可能です。）<br>
 
 # 使用技術
 #### frontend
-  - node: 18.14.0
-  - typescript: 4.9.4
-  - react: 18.2.0
-  - react-redux: 8.0.5
-  - next: 13.1.6
-  - styled-components: 5.3.6
-  - AWS
-    - Amplify
-    - Route53
+- node: 18.14.0
+- typescript: 4.9.4
+- react: 18.2.0
+- react-redux: 8.0.5
+- next: 13.1.6
+- styled-components: 5.3.6
+- AWS
+  - Amplify
+  - Route53
+
 #### backend
-  - node: 18.14.0
-  - express: 4.18.2
-  - jsonwebtoken: 9.0.0
-  - MongoDB Atlas: 5.0.15
-  - AWS
-    - VPC
-    - ECS 
-    - ECR
-    - ALB
-    - S3
-    - ACM
-    - Route53
+- node: 18.14.0
+- express: 4.18.2
+- jsonwebtoken: 9.0.0
+- MongoDB Atlas: 5.0.15
+- AWS
+  - VPC
+  - ECS
+  - ECR
+  - ALB
+  - S3
+  - ACM
+  - Route53
 
 # 構成図
 ![構成図](https://user-images.githubusercontent.com/110725851/230565077-fbb0d29e-ebf7-4e41-a8cd-71142a367e50.png)

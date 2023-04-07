@@ -4,7 +4,7 @@
 twitterと似た感覚で操作できるように意識して作成しています。<br>
 レスポンシブ対応しているのでスマホからもご確認いただけます。<br>
 <table><tr><td>
-<img width="1467" alt="スクリーンショット 2023-04-07 15 14 53" src="https://user-images.githubusercontent.com/110725851/230566937-39df9b62-a5d5-4c75-ae4a-0696f16eed38.png">
+<img width="1467" alt="スクリーンショット 2023-04-07 17 05 50" src="https://user-images.githubusercontent.com/110725851/230569266-7b344125-adfe-4d1b-8b60-8394250d1887.png">
 </td></tr></table>
 
 # URL
@@ -42,7 +42,7 @@ https://www.ramen-sns.com/<br>
   - Route53
 
 # 構成図
-![構成図](https://user-images.githubusercontent.com/110725851/230568687-9d6668a6-000a-43e5-b0c9-b0ace0b8b437.png)
+![構成図](https://user-images.githubusercontent.com/110725851/230569072-c981843e-1999-43a5-9501-20d79a1648c8.png)
 
 # 機能一覧
 - ユーザー登録、ログイン機能

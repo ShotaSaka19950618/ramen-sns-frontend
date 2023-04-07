@@ -17,7 +17,7 @@ const Container = styled.div`
   display: flex;
   position: fixed;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
 `;
 
 const SidebarContainer = styled.aside`

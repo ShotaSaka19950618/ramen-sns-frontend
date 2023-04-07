@@ -12,7 +12,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   background-color: ${({ theme }) => theme.colors.secondary};
   @media screen and (min-width: 1024px) {
     flex-direction: row;

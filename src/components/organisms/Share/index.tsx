@@ -14,7 +14,6 @@ import Text from "components/atoms/Text";
 import TextArea from "components/atoms/TextArea";
 import IconButton from "components/molecules/IconButton";
 import ImagePreview from "components/molecules/ImagePreview";
-import Separator from "components/atoms/Separator";
 import { formatDistance } from "date-fns";
 import { ja } from "date-fns/locale";
 import axios from "axios";
@@ -504,7 +503,6 @@ const Share = () => {
                     alt=""
                     onRemove={handleFileRemove}
                   />
-                  <Separator />
                 </>
               )}
               <ButtonWrapper>

@@ -3,7 +3,7 @@
  ラーメン好きな人間が周りに多いため、食べたものを共有したいと思い作成しました。<br>
  twitterと似た感覚で操作できるよう意識して作成しています。<br>
  レスポンシブ対応しているのでスマホからもご確認いただけます。<br>
-<img width="1452" alt="スクリーンショット 2023-04-07 14 55 16" src="https://user-images.githubusercontent.com/110725851/230550406-09f52228-bf5d-4940-862f-3ee7e3251f23.png">
+<kbd><img width="1467" alt="スクリーンショット 2023-04-07 15 14 53" src="https://user-images.githubusercontent.com/110725851/230552613-324aa490-9065-444a-b92b-2fb6afeb4200.png"></kbd>
 
 
 # URL

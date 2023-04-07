@@ -39,7 +39,8 @@ https://www.ramen-sns.com/<br>
     - ACM
     - Route53
 
-# AWS構成図
+# 構成図
+![構成図](https://user-images.githubusercontent.com/110725851/230565077-fbb0d29e-ebf7-4e41-a8cd-71142a367e50.png)
 
 
 # 機能一覧

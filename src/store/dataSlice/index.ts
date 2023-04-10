@@ -8,7 +8,8 @@ export interface DataState {
   bookmarks: Timeline[];
   notifications: Notifications[];
   ranking: {
-    _id: string;
+    rank: number;
+    shopname: string;
     count: number;
   }[];
 }

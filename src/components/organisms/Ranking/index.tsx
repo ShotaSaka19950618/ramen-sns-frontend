@@ -22,7 +22,11 @@ const RankingShopList = styled.ul`
   margin-bottom: 20px;
 `;
 
-const RankingShop = styled.li`
+type RankingShopProps = {
+  rank: number;
+}
+
+const RankingShop = styled.li<RankingShopProps>`
   margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
@@ -49,15 +53,10 @@ const RankingShop = styled.li`
     border-left: 1em solid currentColor;
     border-right: 1em solid currentColor;
   }
-  &:nth-child(1) {
-    color: #dbb400;
-  }
-  &:nth-child(2) {
-    color: #9fa0a0;
-  }
-  &:nth-child(3) {
-    color: #c47022;
-  }
+  color: black;
+  color: ${({rank}) => rank === 1 && "#dbb400"};
+  color: ${({rank}) => rank === 2 && "#9fa0a0"};
+  color: ${({rank}) => rank === 3 && "#c47022"};
 `;
 
 const Ranking = () => {
@@ -69,14 +68,14 @@ const Ranking = () => {
         <Title fontSize="20px">投稿店舗ランキング</Title>
       </RankinTitle>
       <RankingShopList>
-        {ranking.map((rank, idx) => {
+        {ranking.map((rank) => {
           return (
-            <RankingShop key={rank._id}>
+            <RankingShop key={rank.shopname} rank={rank.rank}>
               <Text flex="1.25" marginRight="10px">
-                第{idx + 1}位
+                第{rank.rank}位
               </Text>
               <Text flex="5" marginRight="10px">
-                {rank._id}
+                {rank.shopname}
               </Text>
               <Text flex="1">{rank.count}件</Text>
             </RankingShop>

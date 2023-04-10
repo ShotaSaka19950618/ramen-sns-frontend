@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
-import { setTimeline, setTimelineAll } from "store/postsSlice";
+import { setReacquisition } from "store/dataSlice";
 import { setShare } from "store/menuSlice";
 import { setToast } from "store/toastSlice";
 import { Post, User } from "types";
@@ -195,14 +195,15 @@ const Post = (props: PostProps) => {
   const authUser = useSelector((state: RootState) => state.auth.authUser);
   const authToken = useSelector((state: RootState) => state.auth.token);
   const backurl = useSelector((state: RootState) => state.menu.backurl);
+  const reacquisition = useSelector(
+    (state: RootState) => state.data.reacquisition
+  );
   const dispatch = useDispatch();
   const currentUserid = authUser?._id || "";
-  const [like, setLike] = useState(post.likes.includes(currentUserid));
-  const [likeCount, setLikeCount] = useState(post.likes.length);
-  const [bookmark, setBookmark] = useState(
-    post.bookmarks.includes(currentUserid)
-  );
-  const [follow, setFollow] = useState(user.followers.includes(currentUserid));
+  const [like, setLike] = useState<boolean>(false);
+  const [likeCount, setLikeCount] = useState<number>(0);
+  const [bookmark, setBookmark] = useState<boolean>(false);
+  const [follow, setFollow] = useState<boolean>(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -211,7 +212,8 @@ const Post = (props: PostProps) => {
     setLike(post.likes.includes(currentUserid));
     setLikeCount(post.likes.length);
     setBookmark(post.bookmarks.includes(currentUserid));
-  }, [post, currentUserid]);
+    setFollow(user.followers.includes(currentUserid));
+  }, [post, user, currentUserid]);
 
   useEffect(() => {
     document.addEventListener("mousedown", handleDropdownClose);
@@ -233,7 +235,8 @@ const Post = (props: PostProps) => {
       return [
         {
           item: "削除",
-          onclick: async () => {
+          onclick: async (event: React.MouseEvent<HTMLDivElement>) => {
+            event.stopPropagation();
             const result = await axios
               .post(
                 `/api/posts/delete`,
@@ -248,34 +251,7 @@ const Post = (props: PostProps) => {
               )
               .then((response) => response.data);
             if (result.success) {
-              const timeline = await axios
-                .post(
-                  `/api/posts/timeline`,
-                  {
-                    userid: authUser?._id,
-                  },
-                  {
-                    headers: {
-                      Authorization: authToken,
-                    },
-                  }
-                )
-                .then((response) => response.data);
-              const timelineAll = await axios
-                .post(
-                  `/api/posts/all`,
-                  {
-                    userid: authUser?._id,
-                  },
-                  {
-                    headers: {
-                      Authorization: authToken,
-                    },
-                  }
-                )
-                .then((response) => response.data);
-              dispatch(setTimeline(timeline.data));
-              dispatch(setTimelineAll(timelineAll.data));
+              dispatch(setReacquisition(reacquisition + 1));
               dispatch(
                 setToast({
                   open: true,
@@ -293,7 +269,8 @@ const Post = (props: PostProps) => {
       return [
         {
           item: follow ? "フォロー解除" : "フォロー",
-          onclick: async () => {
+          onclick: async (event: React.MouseEvent<HTMLDivElement>) => {
+            event.stopPropagation();
             const result = await axios
               .post(
                 `/api/users/follow`,
@@ -317,6 +294,7 @@ const Post = (props: PostProps) => {
                   message: result.message,
                 })
               );
+              setShowDropdown(false);
             }
           },
         },

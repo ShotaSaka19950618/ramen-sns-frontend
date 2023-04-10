@@ -11,6 +11,7 @@ import Header from "components/organisms/Header";
 import Loader from "components/organisms/Loader";
 import Share from "components/organisms/Share";
 import Ranking from "components/organisms/Ranking";
+import Setting from "components/organisms/Setting";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 
@@ -63,7 +64,7 @@ const SubContentContainer = styled.sub`
   @media screen and (max-width: 1024px) {
     display: none;
   }
-`
+`;
 
 const HeaderContainer = styled.header`
   box-sizing: border-box;
@@ -96,6 +97,7 @@ const Layout = (props: LayoutProps) => {
   const { children } = props;
   const isLoading = useSelector((state: RootState) => state.auth.isLoading);
   const share = useSelector((state: RootState) => state.menu.share);
+  const setting = useSelector((state: RootState) => state.menu.setting);
   const toastState = useSelector((state: RootState) => state.toast.state);
   const dispatch = useDispatch();
 
@@ -136,6 +138,7 @@ const Layout = (props: LayoutProps) => {
         </Container>
       )}
       {share.open && <Share />}
+      {setting.open && <Setting />}
       {(toastState.type === "success" || toastState.type === "error") && (
         <Snackbar
           open={toastState.open}

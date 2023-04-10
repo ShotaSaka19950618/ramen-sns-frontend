@@ -37,6 +37,12 @@ const ProfileAvatar = styled.div`
   overflow: hidden;
 `;
 
+const ProfileFollow = styled.div`
+  position: absolute;
+  right: 20px;
+  top: 300px;
+`;
+
 const ProfileNameContainer = styled.div`
   margin-left: 20px;
   margin-bottom: 10px;
@@ -110,19 +116,60 @@ const TimelineDisp = styled.div`
   }
 `;
 
+const FollowButton = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 40px;
+  color: white;
+  background-color: black;
+  border-radius: 20px;
+  &:hover {
+    opacity: 0.7;
+  }
+`;
+
+type FollowLiftButtonProps = {
+  followHover?: boolean;
+};
+
+const FollowLiftButton = styled.span<FollowLiftButtonProps>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 40px;
+  color: ${({ followHover }) => (followHover ? "red" : "black")};
+  background-color: ${({ theme, followHover }) => (followHover ? theme.colors.followLiftBc : "white")};
+  border: ${({ theme, followHover }) => (followHover ? `1px solid ${theme.colors.followLift}` : `1px solid ${theme.colors.border}`)};
+  border-radius: 20px;
+`;
+
 const Profile: NextPageWithLayout = () => {
+  const router = useRouter();
+  const currentPath = router.asPath;
+  const { id } = router.query;
   const IMAGE_FOLDER = process.env.NEXT_PUBLIC_IMAGE_FOLDER;
   const authUser = useSelector((state: RootState) => state.auth.authUser);
   const authToken = useSelector((state: RootState) => state.auth.token);
-  const refresh = useSelector((state: RootState) => state.posts.timeline);
+  const reacquisition = useSelector(
+    (state: RootState) => state.data.reacquisition
+  );
   const dispatch = useDispatch();
   const [user, SetUser] = useState<User>();
   const [timeline, setTimeline] = useState<Timeline[]>();
   const [likes, setLikes] = useState<Timeline[]>();
   const [disp, setDisp] = useState(1);
-  const router = useRouter();
-  const currentPath = router.asPath;
-  const { id } = router.query;
+  const [follow, setFollow] = useState<boolean>(false);
+  const [followHover, setFollowHover] = useState<boolean>(false);
+  const followUserid = user?._id || "";
+
+  useEffect(() => {
+    if (authUser) {
+      setFollow(authUser.followings.includes(followUserid));
+    }
+  }, [authUser, followUserid]);
 
   useEffect(() => {
     if (id && authUser) {
@@ -150,7 +197,7 @@ const Profile: NextPageWithLayout = () => {
       };
       getUser();
     }
-  }, [dispatch, id, authUser, authToken]);
+  }, [dispatch, id, authUser, authToken, currentPath]);
 
   useEffect(() => {
     if (id) {
@@ -172,7 +219,7 @@ const Profile: NextPageWithLayout = () => {
       };
       getTimeline();
     }
-  }, [id, authToken, refresh, disp]);
+  }, [id, authToken, reacquisition, disp]);
 
   useEffect(() => {
     if (id) {
@@ -194,7 +241,25 @@ const Profile: NextPageWithLayout = () => {
       };
       getLikes();
     }
-  }, [id, authToken, refresh, disp]);
+  }, [id, authToken, reacquisition, disp]);
+
+  const handleFollow = async () => {
+    await axios
+      .post(
+        `/api/users/follow`,
+        {
+          userid: authUser?._id,
+          targetUserid: followUserid,
+        },
+        {
+          headers: {
+            Authorization: authToken,
+          },
+        }
+      )
+      .then((response) => response.data);
+    setFollow((follow) => !follow);
+  };
 
   return (
     <>
@@ -222,6 +287,23 @@ const Profile: NextPageWithLayout = () => {
                     style={{ objectFit: "cover" }}
                   />
                 </ProfileAvatar>
+                <ProfileFollow>
+                  {authUser?._id !== followUserid && follow && (
+                    <FollowLiftButton
+                      followHover={followHover}
+                      onMouseEnter={() => setFollowHover(true)}
+                      onMouseLeave={() => setFollowHover(false)}
+                      onClick={handleFollow}
+                    >
+                      {followHover ? "フォロー解除" : "フォロー中"}
+                    </FollowLiftButton>
+                  )}
+                  {authUser?._id !== followUserid && !follow && (
+                    <FollowButton
+                      onClick={handleFollow}
+                    >フォロー</FollowButton>
+                  )}
+                </ProfileFollow>
               </ProfileCover>
               <ProfileNameContainer>
                 <ProfileName>{user.name}</ProfileName>

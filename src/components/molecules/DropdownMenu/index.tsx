@@ -20,7 +20,7 @@ const DropdownMenuItem = styled.div`
 type DropdownMenuProps = {
   menu: {
     item: string;
-    onclick: () => void;
+    onclick: (event: React.MouseEvent<HTMLDivElement>) => Promise<void>; 
   }[];
 };
 

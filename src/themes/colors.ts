@@ -14,6 +14,8 @@ const colors = {
   heartIcon: "#f2cede",
   bookmark: "#1eeb92",
   bookmarkIcon: "#ccffe0",
+  followLift: "#f2a7dd",
+  followLiftBc: "#f2cede",
   hover: "#cdced2",
   gray: "#6b6b6b",
   black: "#000000",

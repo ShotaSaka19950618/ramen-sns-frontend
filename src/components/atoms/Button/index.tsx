@@ -1,6 +1,8 @@
 import styled from "styled-components";
 
 export type ButtonProps = React.ComponentPropsWithoutRef<"button"> & {
+  display?: string;
+  hdisplay?: string;
   fontSize?: string;
   color?: string;
   backgroundColor?: string;
@@ -18,6 +20,7 @@ export type ButtonProps = React.ComponentPropsWithoutRef<"button"> & {
 };
 
 const StyledButton = styled.button<ButtonProps>`
+  display: ${({ display }) => display};
   font-size: ${({ fontSize }) => fontSize || "16px"};
   color: ${({ color, theme }) => color || theme.colors.text};
   background-color: ${({ backgroundColor }) => backgroundColor};
@@ -29,6 +32,7 @@ const StyledButton = styled.button<ButtonProps>`
   border-left: ${({ borderLeft }) => borderLeft || "none"};
   border-right: ${({ borderRight }) => borderRight || "none"};
   &:hover {
+    display: ${({ hdisplay }) => hdisplay};
     color: ${({ hcolor }) => hcolor};
     background-color: ${({ hbackgroundColor }) => hbackgroundColor};
   }

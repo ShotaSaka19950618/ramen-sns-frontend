@@ -26,6 +26,7 @@ const CommentText = styled.div`
 
 const Status: NextPageWithLayout = () => {
   const authToken = useSelector((state: RootState) => state.auth.token);
+  const reacquisition = useSelector((state: RootState) => state.data.reacquisition);
   const backurl = useSelector((state: RootState) => state.menu.backurl);
   const [target, setTarget] = useState<Timeline>();
   const [parent, setParent] = useState<Timeline>();
@@ -60,7 +61,7 @@ const Status: NextPageWithLayout = () => {
       };
       getPost();
     }
-  }, [authToken, id]);
+  }, [authToken, id, router, backurl, reacquisition]);
 
   return (
     <>

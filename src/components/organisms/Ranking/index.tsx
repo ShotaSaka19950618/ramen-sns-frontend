@@ -61,7 +61,7 @@ const RankingShop = styled.li`
 `;
 
 const Ranking = () => {
-  const ranking = useSelector((state: RootState) => state.posts.ranking);
+  const ranking = useSelector((state: RootState) => state.data.ranking);
 
   return (
     <RankingRoot>

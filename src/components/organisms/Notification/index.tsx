@@ -88,6 +88,14 @@ const NotificationDesc = styled.div`
   margin-bottom: 10px;
 `;
 
+const Modal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+`;
+
 const NotificationDropDownContainer = styled.div`
   position: absolute;
   top: 30px;
@@ -130,7 +138,8 @@ const Notification = (props: NotificationProps) => {
   const menu = [
     {
       item: follow ? "フォロー解除" : "フォロー",
-      onclick: async () => {
+      onclick: async (event: React.MouseEvent<HTMLDivElement>) => {
+        event.stopPropagation();
         const result = await axios
           .post(
             `/api/users/follow`,
@@ -154,6 +163,7 @@ const Notification = (props: NotificationProps) => {
               message: result.message,
             })
           );
+          setShowDropdown(false);
         }
       },
     },
@@ -221,9 +231,12 @@ const Notification = (props: NotificationProps) => {
         </NotificationContentContainer>
       </NotificationWrapper>
       {showDropdown && (
-        <NotificationDropDownContainer ref={dropdownRef}>
-          <DropdownMenu menu={menu} />
-        </NotificationDropDownContainer>
+        <>
+          <Modal />
+          <NotificationDropDownContainer ref={dropdownRef}>
+            <DropdownMenu menu={menu} />
+          </NotificationDropDownContainer>
+        </>
       )}
     </NotificationRoot>
   );

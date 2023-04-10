@@ -40,7 +40,7 @@ export type Notification = {
   check: boolean;
   createdAt?: string;
   updatedAt?: string;
-}
+};
 
 // タイムライン
 export type Timeline = {
@@ -52,7 +52,7 @@ export type Timeline = {
 export type Notifications = {
   notification: Notification;
   user: User;
-}
+};
 
 // アイコン
 export type Icon =
@@ -72,7 +72,8 @@ export type Icon =
   | "ArrowDownward"
   | "ArrowForward"
   | "ArrowBack"
-  | "Photo";
+  | "Photo"
+  | "AddAPhoto";
 
 // メニュー
 export type Menu = {

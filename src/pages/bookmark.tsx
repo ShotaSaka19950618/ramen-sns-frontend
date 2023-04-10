@@ -11,7 +11,7 @@ const BookmarksContainer = styled.div`
 `;
 
 const Bookmark: NextPageWithLayout = () => {
-  const bookmarks = useSelector((state: RootState) => state.posts.bookmarks);
+  const bookmarks = useSelector((state: RootState) => state.data.bookmarks);
 
   return (
     <>

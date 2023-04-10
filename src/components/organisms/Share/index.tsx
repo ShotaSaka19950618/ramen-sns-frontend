@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
-import { setTimeline, setTimelineAll } from "store/postsSlice";
+import { setReacquisition } from "store/dataSlice";
 import { setShare } from "store/menuSlice";
 import { setToast } from "store/toastSlice";
 import { theme } from "themes";
@@ -43,7 +43,6 @@ const ShareRoot = styled.div`
     height: 80%;
     border-radius: 10px;
   }
-
   -ms-overflow-style: none;
   scrollbar-width: none;
   &::-webkit-scrollbar {
@@ -237,6 +236,7 @@ const Share = () => {
   const authUser = useSelector((state: RootState) => state.auth.authUser);
   const authToken = useSelector((state: RootState) => state.auth.token);
   const share = useSelector((state: RootState) => state.menu.share);
+  const reacquisition = useSelector((state: RootState) => state.data.reacquisition);
   const dispatch = useDispatch();
   const [shopname, SetShopname] = useState(share.comment.shopname);
   const [file, setFile] = useState<File | null>(null);
@@ -300,34 +300,7 @@ const Share = () => {
           },
         })
       );
-      const timeline = await axios
-        .post(
-          `/api/posts/timeline`,
-          {
-            userid: authUser?._id,
-          },
-          {
-            headers: {
-              Authorization: authToken,
-            },
-          }
-        )
-        .then((response) => response.data);
-      const timelineAll = await axios
-        .post(
-          `/api/posts/all`,
-          {
-            userid: authUser?._id,
-          },
-          {
-            headers: {
-              Authorization: authToken,
-            },
-          }
-        )
-        .then((response) => response.data);
-      dispatch(setTimeline(timeline.data));
-      dispatch(setTimelineAll(timelineAll.data));
+      dispatch(setReacquisition(reacquisition + 1));
     } else {
       setToast({
         open: true,

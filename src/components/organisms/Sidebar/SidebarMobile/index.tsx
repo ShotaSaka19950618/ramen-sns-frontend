@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
 import { setAuthUser } from "store/authSlice";
-import { setShare } from "store/menuSlice";
+import { setShare, setSetting } from "store/menuSlice";
 import type { Menu } from "types";
 import { theme } from "themes";
 import styled from "styled-components";
@@ -194,7 +194,13 @@ const SidebarMobile = () => {
     },
     {
       iconType: "Settings",
-      action: () => {},
+      action: () => {
+        dispatch(
+          setSetting({
+            open: true,
+          })
+        );
+      },
       text: "設定",
       active: false,
     },
@@ -203,7 +209,8 @@ const SidebarMobile = () => {
   const dropdownMenu = [
     {
       item: "サインアウト",
-      onclick: () => {
+      onclick: async (event: React.MouseEvent<HTMLDivElement>) => {
+        event.stopPropagation();
         dispatch(setAuthUser(null));
         destroyCookie(null, "accessToken");
       },

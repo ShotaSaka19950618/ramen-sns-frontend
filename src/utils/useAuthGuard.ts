@@ -14,6 +14,9 @@ import { parseCookies } from "nookies";
 const useAuthGuard = (): void => {
   const accessToken = parseCookies().accessToken;
   const authUser = useSelector((state: RootState) => state.auth.authUser);
+  const reacquisition = useSelector(
+    (state: RootState) => state.data.reacquisition
+  );
   const dispatch = useDispatch();
   const router = useRouter();
   const redirectTopPage = useCallback(() => {
@@ -24,70 +27,70 @@ const useAuthGuard = (): void => {
   }, [router]);
   const currentPath = router.pathname;
 
+  console.log(currentPath)
+
   useEffect(() => {
-    if (!authUser) {
-      if (currentPath === "/signin" || currentPath === "/register") {
-        if (accessToken) {
-          const getAuthUser = async () => {
-            const authUser = await axios
-              .post(
-                "/api/auth/user",
-                {},
-                {
-                  headers: {
-                    Authorization: accessToken,
-                  },
-                }
-              )
-              .then((response) => response.data);
-            if (authUser.success) {
-              dispatch(setToken(accessToken));
-              dispatch(setAuthUser(authUser.data));
-              dispatch(setIsLoading(false));
-              redirectTopPage();
-            } else {
-              dispatch(setIsSigninLoading(false));
-            }
-          };
-          getAuthUser();
-        } else {
-          dispatch(setIsSigninLoading(false));
-        }
+    if (currentPath === "/signin" || currentPath === "/register") {
+      if (accessToken) {
+        const getAuthUser = async () => {
+          const authUser = await axios
+            .post(
+              "/api/auth/user",
+              {},
+              {
+                headers: {
+                  Authorization: accessToken,
+                },
+              }
+            )
+            .then((response) => response.data);
+          if (authUser.success) {
+            dispatch(setToken(accessToken));
+            dispatch(setAuthUser(authUser.data));
+            dispatch(setIsLoading(false));
+            redirectTopPage();
+          } else {
+            dispatch(setIsSigninLoading(false));
+          }
+        };
+        getAuthUser();
       } else {
-        if (accessToken) {
-          const getAuthUser = async () => {
-            const authUser = await axios
-              .post(
-                "/api/auth/user",
-                {},
-                {
-                  headers: {
-                    Authorization: accessToken,
-                  },
-                }
-              )
-              .then((response) => response.data);
-            if (authUser.success) {
-              dispatch(setToken(accessToken));
-              dispatch(setAuthUser(authUser.data));
-              dispatch(setIsLoading(false));
-            } else {
-              redirectSigninPage();
-            }
-          };
-          getAuthUser();
-        } else {
-          redirectSigninPage();
-        }
+        dispatch(setIsSigninLoading(false));
+      }
+    } else {
+      if (accessToken) {
+        const getAuthUser = async () => {
+          const authUser = await axios
+            .post(
+              "/api/auth/user",
+              {},
+              {
+                headers: {
+                  Authorization: accessToken,
+                },
+              }
+            )
+            .then((response) => response.data);
+          if (authUser.success) {
+            dispatch(setToken(accessToken));
+            dispatch(setAuthUser(authUser.data));
+            dispatch(setIsLoading(false));
+          } else {
+            redirectSigninPage();
+          }
+        };
+        getAuthUser();
+      } else {
+        redirectSigninPage();
       }
     }
   }, [
     dispatch,
     redirectSigninPage,
     redirectTopPage,
-    authUser,
     accessToken,
     currentPath,
+    reacquisition,
   ]);
 };
 

@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { Timeline, Notifications } from "types";
 
-export interface PostsState {
+export interface DataState {
+  reacquisition: number;
   timeline: Timeline[];
   timelineAll: Timeline[];
   bookmarks: Timeline[];
@@ -12,7 +13,8 @@ export interface PostsState {
   }[];
 }
 
-const initialState: PostsState = {
+const initialState: DataState = {
+  reacquisition: 0,
   timeline: [],
   timelineAll: [],
   bookmarks: [],
@@ -20,10 +22,13 @@ const initialState: PostsState = {
   ranking: [],
 };
 
-const postsSlice = createSlice({
-  name: "posts",
+const dataSlice = createSlice({
+  name: "data",
   initialState,
   reducers: {
+    setReacquisition: (state, action) => {
+      state.reacquisition = action.payload;
+    },
     setTimeline: (state, action) => {
       state.timeline = action.payload;
     },
@@ -43,11 +48,12 @@ const postsSlice = createSlice({
 });
 
 export const {
+  setReacquisition,
   setTimeline,
   setTimelineAll,
   setBookmarks,
   setNotifications,
   setRanking,
-} = postsSlice.actions;
+} = dataSlice.actions;
 
-export default postsSlice.reducer;
+export default dataSlice.reducer;

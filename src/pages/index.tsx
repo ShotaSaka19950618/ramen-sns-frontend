@@ -3,10 +3,7 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "store";
-import {
-  setTimeline,
-  setTimelineAll,
-} from "store/postsSlice";
+import { setReacquisition } from "store/dataSlice";
 import styled from "styled-components";
 import { getLayout } from "components/templates/Layout";
 import Post from "components/organisms/Post";
@@ -35,58 +32,17 @@ const TimelineDisp = styled.div`
 `;
 
 const Index: NextPageWithLayout = () => {
-  const authUser = useSelector((state: RootState) => state.auth.authUser);
-  const authToken = useSelector((state: RootState) => state.auth.token);
-  const timeline = useSelector((state: RootState) => state.posts.timeline);
-  const timelineAll = useSelector(
-    (state: RootState) => state.posts.timelineAll
+  const reacquisition = useSelector(
+    (state: RootState) => state.data.reacquisition
   );
+  const timeline = useSelector((state: RootState) => state.data.timeline);
+  const timelineAll = useSelector((state: RootState) => state.data.timelineAll);
   const dispatch = useDispatch();
   const [disp, setDisp] = useState(1);
 
   useEffect(() => {
-    if (authUser) {
-      const getTimeline = async () => {
-        const timeline = await axios
-          .post(
-            `/api/posts/timeline`,
-            {
-              userid: authUser._id,
-            },
-            {
-              headers: {
-                Authorization: authToken,
-              },
-            }
-          )
-          .then((response) => response.data);
-        dispatch(setTimeline(timeline.data));
-      };
-      getTimeline();
-    }
-  }, [dispatch, authUser, authToken, disp]);
-
-  useEffect(() => {
-    if (authUser) {
-      const getTimelineAll = async () => {
-        const timelineAll = await axios
-          .post(
-            `/api/posts/all`,
-            {
-              userid: authUser._id,
-            },
-            {
-              headers: {
-                Authorization: authToken,
-              },
-            }
-          )
-          .then((response) => response.data);
-        dispatch(setTimelineAll(timelineAll.data));
-      };
-      getTimelineAll();
-    }
-  }, [dispatch, authUser, authToken, disp]);
+    dispatch(setReacquisition(reacquisition + 1));
+  }, [dispatch, disp]);
 
   return (
     <>

@@ -12,7 +12,7 @@ const NotificationsContainer = styled.div`
 
 const Notifications: NextPageWithLayout = () => {
   const notifications = useSelector(
-    (state: RootState) => state.posts.notifications
+    (state: RootState) => state.data.notifications
   );
 
   return (

@@ -8,19 +8,16 @@ import {
   setBookmarks,
   setNotifications,
   setRanking,
-} from "store/postsSlice";
+} from "store/dataSlice";
 import axios from "axios";
 
 const useGetData = (): void => {
   const authUser = useSelector((state: RootState) => state.auth.authUser);
   const authToken = useSelector((state: RootState) => state.auth.token);
-  const share = useSelector((state: RootState) => state.menu.share.open);
+  const reacquisition = useSelector((state: RootState) => state.data.reacquisition);
   const dispatch = useDispatch();
   const router = useRouter();
   const currentPath = router.pathname;
-
-  console.log(currentPath);
-
 
   useEffect(() => {
     if (authUser) {
@@ -42,7 +39,7 @@ const useGetData = (): void => {
       };
       getTimeline();
     }
-  }, [dispatch, authUser, authToken, currentPath, share]);
+  }, [dispatch, authUser, authToken, currentPath, reacquisition]);
 
   useEffect(() => {
     if (authUser) {
@@ -64,7 +61,7 @@ const useGetData = (): void => {
       };
       getTimelineAll();
     }
-  }, [dispatch, authUser, authToken, currentPath, share]);
+  }, [dispatch, authUser, authToken, currentPath, reacquisition]);
 
   useEffect(() => {
     if (authUser) {
@@ -86,7 +83,7 @@ const useGetData = (): void => {
       };
       getBookmarks();
     }
-  }, [dispatch, authUser, authToken, currentPath, share]);
+  }, [dispatch, authUser, authToken, currentPath, reacquisition]);
 
   useEffect(() => {
     if (authUser) {
@@ -108,7 +105,7 @@ const useGetData = (): void => {
       };
       getNotifications();
     }
-  }, [dispatch, authUser, authToken, currentPath, share]);
+  }, [dispatch, authUser, authToken, currentPath, reacquisition]);
 
   useEffect(() => {
     if (authUser) {
@@ -130,7 +127,7 @@ const useGetData = (): void => {
       };
       getRanking();
     }
-  }, [dispatch, authUser, authToken, currentPath, share]);
+  }, [dispatch, authUser, authToken, currentPath, reacquisition]);
 };
 
 export default useGetData;

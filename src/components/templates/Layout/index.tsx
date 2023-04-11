@@ -48,12 +48,8 @@ const MainContentContainer = styled.main`
   align-items: flex-start;
   z-index: 0;
   word-wrap: break-word;
-  overflow: scroll;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  overflow-x: hidden;
+  overflow-y: auto;
 `;
 
 const SubContentContainer = styled.sub`

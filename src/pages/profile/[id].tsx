@@ -163,7 +163,16 @@ const Profile: NextPageWithLayout = () => {
   const [disp, setDisp] = useState(1);
   const [follow, setFollow] = useState<boolean>(false);
   const [followHover, setFollowHover] = useState<boolean>(false);
+  const [followCount, setFollowCount] = useState<number>(0);
+  const [followerCount, setFollowerCount] = useState<number>(0);
   const followUserid = user?._id || "";
+
+  useEffect(() => {
+    if (user) {
+      setFollowCount(user.followings.length)
+      setFollowerCount(user?.followers.length);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (authUser) {
@@ -259,6 +268,7 @@ const Profile: NextPageWithLayout = () => {
       )
       .then((response) => response.data);
     setFollow((follow) => !follow);
+    setFollowerCount((followerCount) => (follow ? followerCount -1 : followerCount + 1));
   };
 
   return (
@@ -317,13 +327,13 @@ const Profile: NextPageWithLayout = () => {
               <ProfileStatus>
                 <ProfileFollowing>
                   <ProfileFollowingCount>
-                    {user.followings.length}
+                    {followCount}
                   </ProfileFollowingCount>
                   フォロー中
                 </ProfileFollowing>
                 <ProfileFollower>
                   <ProfileFollowerCount>
-                    {user.followers.length}
+                    {followerCount}
                   </ProfileFollowerCount>
                   フォロワー
                 </ProfileFollower>

@@ -49,6 +49,11 @@ const MainContentContainer = styled.main`
   z-index: 0;
   word-wrap: break-word;
   overflow: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const SubContentContainer = styled.sub`
